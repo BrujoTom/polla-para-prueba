@@ -2051,6 +2051,7 @@ function renderInicio() {
             <div class="resultado-marcador">${p.resultado ? p.resultado.local : 0} – ${p.resultado ? p.resultado.visitante : 0}</div>
             <div class="equipo" style="justify-content:flex-end"><span class="equipo-nombre">${p.visitante}</span><span class="equipo-bandera">${p.visitanteFlag}</span></div>
           </div>
+          <div class="pronostico-grid">${renderPronosticosChips(p)}</div>
         </div>`;
       });
       liveHtml += '</div>';
