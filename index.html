@@ -1433,11 +1433,13 @@ main {
 
   <!-- Estado de auto-actualización -->
   <div class="auto-update-bar" id="auto-update-status">
-    <span class="update-dot js-update-dot" id="update-dot"></span>
-    <span class="js-update-text" id="update-text">Iniciando sincronización de resultados en tiempo real...</span>
-    <span class="js-update-time" style="margin-left:auto;opacity:0.5;font-size:11px" id="update-time"></span>
-    <button onclick="fetchWorldCupResults()" title="Actualizar ahora" style="background:none;border:1px solid var(--border-bright);border-radius:6px;color:var(--text-muted);cursor:pointer;font-size:13px;padding:2px 8px;margin-left:8px;flex-shrink:0">🔄</button>
+    <span class="update-dot" id="update-dot"></span>
+    <span id="update-text">Iniciando sincronización de resultados en tiempo real...</span>
+    <span style="margin-left:auto;opacity:0.5;font-size:11px" id="update-time"></span>
   </div>
+
+  <!-- Partidos en vivo en este momento -->
+  <div id="partidos-en-vivo-home"></div>
 
   <div class="two-col">
     <div class="card">
@@ -1508,7 +1510,8 @@ main {
 <!-- ════════════ PRONÓSTICOS ════════════ -->
 <section id="sec-pronosticos" class="seccion">
   <div class="card">
-    <div class="card-titulo">📝 Pronósticos por Partido</div>
+    <div class="card-titulo">📝 Registro de Pronósticos por Partido</div>
+    <div class="alerta alerta-aviso">Registra el pronóstico de cada participante para cada partido.</div>
     <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px">
       <div class="form-grupo" style="flex:1;min-width:180px">
         <label>Buscar partido</label>
@@ -1524,9 +1527,8 @@ main {
   <div class="card">
     <div class="card-titulo">⚽ Resultados de Partidos</div>
     <div class="alerta alerta-info" id="resultados-auto-info" style="display:flex;align-items:center;gap:10px">
-      <span class="update-dot js-update-dot"></span>
-      <span>Los resultados se sincronizan automáticamente. <span class="js-update-text">Conectando...</span> <span class="js-update-time" style="color:var(--text-dim)"></span></span>
-      <button onclick="fetchWorldCupResults()" title="Actualizar ahora" style="background:none;border:1px solid var(--border-bright);border-radius:6px;color:var(--text-muted);cursor:pointer;font-size:13px;padding:2px 8px;margin-left:auto;flex-shrink:0">🔄 Actualizar</button>
+      <span id="update-dot" class="update-dot"></span>
+      <span>Los resultados se sincronizan automáticamente con ESPN. <span id="update-text">Conectando...</span> <span id="update-time" style="color:var(--text-dim)"></span></span>
     </div>
     <div id="lista-resultados-partidos"></div>
   </div>
@@ -1553,6 +1555,18 @@ main {
 
 </main>
 
+<!-- ════ MODAL PRONOSTICO ════ -->
+<div class="modal-overlay" id="modal-pronostico">
+  <div class="modal">
+    <div class="modal-titulo" id="modal-pronostico-titulo">📝 Pronóstico</div>
+    <div id="modal-pronostico-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="cerrarModal('modal-pronostico')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarPronosticoModal()">Guardar pronósticos</button>
+    </div>
+  </div>
+</div>
+
 <!-- ════ MODAL RESULTADO ════ -->
 <!-- ════ MODAL ESPECIALES ════ -->
 
@@ -1572,7 +1586,7 @@ const GRUPOS_MUNDIAL = {
   'H': [['España','🇪🇸'],['Cabo verde','🇨🇻'],['Arabia S.','🇸🇦'],['Uruguay','🇺🇾']],
   'I': [['Francia','🇫🇷'],['Senegal','🇸🇳'],['Irák','🇮🇶'],['Noruega','🇳🇴']],
   'J': [['Argentina','🇦🇷'],['Argelia','🇩🇿'],['Austria','🇦🇹'],['Jordania','🇯🇴']],
-  'K': [['Portugal','🇵🇹'],['Congo','🇨🇩'],['Uzbekistán','🇺🇿'],['Colombia','🇨🇴']],
+  'K': [['Portugal','🇵🇹'],['Congo','🇨🇩'],['Uzbekistan','🇺🇿'],['Colombia','🇨🇴']],
   'L': [['Inglaterra','🏴󠁧󠁢󠁥󠁮󠁧󠁿'],['Croacia','🇭🇷'],['Ghana','🇬🇭'],['Panamá','🇵🇦']],
 };
 
@@ -1640,11 +1654,11 @@ function generarPartidosGrupos() {
     {id:'G59',fase:'Grupos',grupo:'Grupo J',local:'Argelia',localFlag:'🇩🇿',visitante:'Austria',visitanteFlag:'🇦🇹',fecha:'27/06 22 hrs',resultado:null},
     {id:'G60',fase:'Grupos',grupo:'Grupo J',local:'Jordania',localFlag:'🇯🇴',visitante:'Argentina',visitanteFlag:'🇦🇷',fecha:'27/06 22 hrs',resultado:null},
     {id:'G61',fase:'Grupos',grupo:'Grupo K',local:'Portugal',localFlag:'🇵🇹',visitante:'Congo',visitanteFlag:'🇨🇩',fecha:'17/06 13 hrs',resultado:null},
-    {id:'G62',fase:'Grupos',grupo:'Grupo K',local:'Uzbekistán',localFlag:'🇺🇿',visitante:'Colombia',visitanteFlag:'🇨🇴',fecha:'17/06 22 hrs',resultado:null},
-    {id:'G63',fase:'Grupos',grupo:'Grupo K',local:'Portugal',localFlag:'🇵🇹',visitante:'Uzbekistán',visitanteFlag:'🇺🇿',fecha:'23/06 13 hrs',resultado:null},
+    {id:'G62',fase:'Grupos',grupo:'Grupo K',local:'Uzbekistan',localFlag:'🇺🇿',visitante:'Colombia',visitanteFlag:'🇨🇴',fecha:'17/06 22 hrs',resultado:null},
+    {id:'G63',fase:'Grupos',grupo:'Grupo K',local:'Portugal',localFlag:'🇵🇹',visitante:'Uzbekistan',visitanteFlag:'🇺🇿',fecha:'23/06 13 hrs',resultado:null},
     {id:'G64',fase:'Grupos',grupo:'Grupo K',local:'Colombia',localFlag:'🇨🇴',visitante:'Congo',visitanteFlag:'🇨🇩',fecha:'23/06 22 hrs',resultado:null},
     {id:'G65',fase:'Grupos',grupo:'Grupo K',local:'Colombia',localFlag:'🇨🇴',visitante:'Portugal',visitanteFlag:'🇵🇹',fecha:'27/06 19:30 hrs',resultado:null},
-    {id:'G66',fase:'Grupos',grupo:'Grupo K',local:'Congo',localFlag:'🇨🇩',visitante:'Uzbekistán',visitanteFlag:'🇺🇿',fecha:'27/06 19:30 hrs',resultado:null},
+    {id:'G66',fase:'Grupos',grupo:'Grupo K',local:'Congo',localFlag:'🇨🇩',visitante:'Uzbekistan',visitanteFlag:'🇺🇿',fecha:'27/06 19:30 hrs',resultado:null},
     {id:'G67',fase:'Grupos',grupo:'Grupo L',local:'Inglaterra',localFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',visitante:'Croacia',visitanteFlag:'🇭🇷',fecha:'17/06 16 hrs',resultado:null},
     {id:'G68',fase:'Grupos',grupo:'Grupo L',local:'Ghana',localFlag:'🇬🇭',visitante:'Panamá',visitanteFlag:'🇵🇦',fecha:'17/06 19 hrs',resultado:null},
     {id:'G69',fase:'Grupos',grupo:'Grupo L',local:'Inglaterra',localFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',visitante:'Ghana',visitanteFlag:'🇬🇭',fecha:'23/06 16 hrs',resultado:null},
@@ -1682,31 +1696,6 @@ function generarPartidosElim() {
 // ══════════════════════════════════════════════════════════
 let estado = cargarEstado();
 
-// ── MIGRACIÓN: renombrar "Papagallo" -> "Papagayo" y fusionar duplicados ──
-(function migrarPapagayo() {
-  const jugs = estado.jugadores || [];
-  const esPapagallo = j => (j.nombre || '').toLowerCase() === 'papagallo';
-  const esPapagayo  = j => (j.nombre || '').toLowerCase() === 'papagayo';
-
-  const viejo  = jugs.find(esPapagallo);
-  const nuevo  = jugs.find(esPapagayo);
-
-  if (viejo && nuevo && viejo.id !== nuevo.id) {
-    // Existen ambos (duplicado) -> fusionar pronósticos en "nuevo" y eliminar "viejo"
-    estado.pronosticos[nuevo.id] = Object.assign(
-      {}, estado.pronosticos[viejo.id] || {}, estado.pronosticos[nuevo.id] || {}
-    );
-    delete estado.pronosticos[viejo.id];
-    delete estado.puntajes[viejo.id];
-    estado.jugadores = jugs.filter(j => j.id !== viejo.id);
-    guardarEstado();
-  } else if (viejo && !nuevo) {
-    // Solo existe "Papagallo" -> renombrar a "Papagayo"
-    viejo.nombre = 'Papagayo';
-    guardarEstado();
-  }
-})();
-
 function estadoDefault() {
   return {
     jugadores: [],
@@ -1714,7 +1703,7 @@ function estadoDefault() {
     pronosticos: {},
     puntajes: {},
     especiales: {},
-    version: 5,
+    version: 7,
   };
 }
 
@@ -1723,16 +1712,16 @@ function cargarEstado() {
     const raw = localStorage.getItem('polla_mundial_2026');
     if (!raw) return estadoDefault();
     const parsed = JSON.parse(raw);
-    if (!parsed.partidos || parsed.version !== 5) {
+    if (!parsed.partidos || parsed.version !== 7) {
       const def = estadoDefault();
-      def.jugadores = parsed.jugadores || [];
+      def.jugadores = (parsed.jugadores || []).filter(j => j.nombre.toLowerCase() !== 'papagallo');
       def.pronosticos = parsed.pronosticos || {};
       def.puntajes = parsed.puntajes || {};
       def.especiales = parsed.especiales || {};
       return def;
     }
-    // Resetear estado en vivo al cargar (se actualiza con la API al conectar)
-    (parsed.partidos || []).forEach(p => { p.enVivo = false; p.minuto = null; });
+    // Limpieza de jugadores legacy/duplicados aunque la versión coincida
+    parsed.jugadores = (parsed.jugadores || []).filter(j => j.nombre.toLowerCase() !== 'papagallo');
     return parsed;
   } catch(e) { return estadoDefault(); }
 }
@@ -1749,18 +1738,19 @@ function guardarEstado() {
 const TEAM_NAME_MAP = {
   // Grupo A
   'mexico': 'México', 'méxico': 'México',
-  'south africa': 'Sud Africa', 'sudáfrica': 'Sud Africa', 'sudafrica': 'Sud Africa',
-  'korea republic': 'Corea', 'south korea': 'Corea', 'korea': 'Corea', 'korea, republic of': 'Corea',
+  'south africa': 'Sud Africa', 'sudáfrica': 'Sud Africa',
+  'korea republic': 'Corea', 'south korea': 'Corea', 'korea': 'Corea',
   'czech republic': 'R. Checa', 'czechia': 'R. Checa', 'czech': 'R. Checa',
   // Grupo B
   'canada': 'Canadá',
-  'bosnia and herzegovina': 'Bosnia', 'bosnia': 'Bosnia', 'bosnia-herzegovina': 'Bosnia',
+  'bosnia and herzegovina': 'Bosnia', 'bosnia': 'Bosnia',
+  'bosnia-herzegovina': 'Bosnia', 'bosnia herzegovina': 'Bosnia',
   'qatar': 'Qatar', 'switzerland': 'Suiza',
   // Grupo C
-  'brazil': 'Brasil', 'morocco': 'Marruecos', 'haiti': 'Haití', 'haití': 'Haití', 'scotland': 'Escocia',
+  'brazil': 'Brasil', 'morocco': 'Marruecos', 'haiti': 'Haití', 'scotland': 'Escocia',
   // Grupo D
   'usa': 'Usa', 'united states': 'Usa', 'us': 'Usa', 'united states of america': 'Usa',
-  'turkey': 'Turquía', 'türkiye': 'Turquía', 'turkiye': 'Turquía',
+  'turkey': 'Turquía', 'türkiye': 'Turquía',
   'australia': 'Australia', 'paraguay': 'Paraguay',
   // Grupo E
   'germany': 'Alemania',
@@ -1777,27 +1767,26 @@ const TEAM_NAME_MAP = {
   'new zealand': 'Nueva Zelanda',
   // Grupo H
   'spain': 'España',
-  'cape verde': 'Cabo verde', 'cabo verde': 'Cabo verde', 'cape verde islands': 'Cabo verde',
+  'cape verde': 'Cabo verde', 'cabo verde': 'Cabo verde',
+  'cape verde islands': 'Cabo verde',
   'saudi arabia': 'Arabia S.', 'uruguay': 'Uruguay',
   // Grupo I
-  'france': 'Francia', 'senegal': 'Senegal', 'iraq': 'Irák', 'norway': 'Noruega',
+  'france': 'Francia', 'senegal': 'Senegal',
+  'iraq': 'Irák', 'norway': 'Noruega',
   // Grupo J
   'argentina': 'Argentina', 'algeria': 'Argelia', 'austria': 'Austria', 'jordan': 'Jordania',
   // Grupo K
   'portugal': 'Portugal',
   'dr congo': 'Congo', 'congo dr': 'Congo', 'congo, dr': 'Congo',
-  'democratic republic of congo': 'Congo', 'congo': 'Congo',
-  'uzbekistan': 'Uzbekistán', 'colombia': 'Colombia', 'col': 'Colombia',
+  'democratic republic of congo': 'Congo', 'congo': 'Congo', 'congo dr': 'Congo',
+  'uzbekistan': 'Uzbekistan', 'colombia': 'Colombia',
   // Grupo L
   'england': 'Inglaterra', 'croatia': 'Croacia', 'ghana': 'Ghana', 'panama': 'Panamá',
 };
 
 function normalizeTeamName(name) {
   if (!name) return '';
-  // Normalizar comillas tipográficas U+2018/U+2019 → recta U+0027
-  // football-data.org usa "Côte d'Ivoire" con comilla tipográfica
-  const clean = name.toLowerCase().trim().replace(/[\u2018\u2019]/g, "'");
-  return TEAM_NAME_MAP[clean] || name;
+  return TEAM_NAME_MAP[name.toLowerCase()] || name;
 }
 
 let autoUpdateInterval = null;
@@ -1805,13 +1794,9 @@ let lastUpdateTime = null;
 let liveGamesActive = false;
 
 async function fetchWorldCupResults() {
-  const dots    = document.querySelectorAll('.js-update-dot');
-  const txts    = document.querySelectorAll('.js-update-text');
-  const timeEls = document.querySelectorAll('.js-update-time');
-  const setDot  = (cls) => dots.forEach(el => { el.className = 'update-dot js-update-dot' + (cls ? ' ' + cls : ''); });
-  const setTxt  = (s)   => txts.forEach(el => { el.textContent = s; });
-  const setTime = (s)   => timeEls.forEach(el => { el.textContent = s; });
-  const ahora   = () => new Date().toLocaleTimeString('es-CL', {hour:'2-digit', minute:'2-digit'});
+  const dot    = document.getElementById('update-dot');
+  const txt    = document.getElementById('update-text');
+  const timeEl = document.getElementById('update-time');
 
   try {
     // Llamamos a nuestro propio proxy en Vercel (evita CORS)
@@ -1822,127 +1807,56 @@ async function fetchWorldCupResults() {
     const data = await response.json();
     const matches = data.matches || [];
 
-    if (data.error) {
-      console.warn('[FD Warning]', data.error);
-    }
-    console.log(`[FD] ${matches.length} partidos recibidos del proxy`);
-
-    if (matches.length === 0) {
-      setDot('');
-      setTxt(data.error ? `⚠️ ${data.error}` : 'Sin partidos disponibles aún');
-      lastUpdateTime = new Date();
-      setTime(ahora());
-      return;
-    }
-
     let actualizados = 0;
     let tickerItems  = [];
     let liveList     = [];
-    let noEncontrados = [];
 
     matches.forEach(match => {
-      const st = match.status; // FINISHED, IN_PLAY, PAUSED, TIMED, SCHEDULED
-      const esEnVivo = st === 'IN_PLAY' || st === 'PAUSED';
+      const st = match.status; // FINISHED, LIVE, IN_PLAY, PAUSED, TIMED, SCHEDULED
+      const esEnVivo = st === 'IN_PLAY' || st === 'PAUSED' || st === 'LIVE';
       const esFinal  = st === 'FINISHED';
       if (!esEnVivo && !esFinal) return;
 
       const homeRaw = match.homeTeam?.name || match.homeTeam?.shortName || '';
       const awayRaw = match.awayTeam?.name || match.awayTeam?.shortName || '';
+      console.log('[FD]', st, '|', homeRaw, 'vs', awayRaw, '|',
+        match.score?.fullTime?.home, '-', match.score?.fullTime?.away);
 
       const homeNorm = normalizeTeamName(homeRaw);
       const awayNorm = normalizeTeamName(awayRaw);
 
-      // football-data.org puede usar fullTime, regularTime o score directo
-      const sc = match.score || {};
-      const ft = sc.fullTime    || {};
-      const rt = sc.regularTime || {};
-      const ht = sc.halfTime    || {};
+      const golesHome = esEnVivo
+        ? (match.score?.fullTime?.home ?? match.score?.halfTime?.home ?? 0)
+        : (match.score?.fullTime?.home ?? 0);
+      const golesAway = esEnVivo
+        ? (match.score?.fullTime?.away ?? match.score?.halfTime?.away ?? 0)
+        : (match.score?.fullTime?.away ?? 0);
 
-      const rawHome = ft.home ?? rt.home ?? (esEnVivo ? (ht.home ?? 0) : null);
-      const rawAway = ft.away ?? rt.away ?? (esEnVivo ? (ht.away ?? 0) : null);
-
-      if (rawHome === null || rawHome === undefined || rawAway === null || rawAway === undefined) return;
-
-      const golesHome = rawHome;
-      const golesAway = rawAway;
-
-      // Búsqueda robusta: primero exacta, luego por similitud de palabras clave
-      // Esto evita fallos por tildes, comillas tipográficas, variantes de nombre
-      function similitud(apiName, appName) {
-        if (!apiName || !appName) return false;
-        // Normalizar: minúsculas, sin tildes, sin puntuación especial
-        const clean = s => s.toLowerCase()
-          .replace(/[à-ÿ]/g, c => 'aeiounco'['àáâãäåèéêëìíîïòóôõöùúûünç'.indexOf(c)] ?? c)
-          .replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
-        const a = clean(apiName), b = clean(appName);
-        if (a === b) return true;
-        // Verificar si alguna palabra clave (>3 chars) de la API aparece en el nombre de la app
-        const palabras = a.split(' ').filter(w => w.length > 3);
-        return palabras.length > 0 && palabras.every(w => b.includes(w));
-      }
-
-      let partido = estado.partidos.find(p =>
+      const partido = estado.partidos.find(p =>
         (p.local === homeNorm && p.visitante === awayNorm) ||
         (p.local === awayNorm  && p.visitante === homeNorm)
       );
 
-      // Si no encontró exacto, intentar con matching flexible
-      if (!partido) {
-        partido = estado.partidos.find(p =>
-          (similitud(homeRaw, p.local) && similitud(awayRaw, p.visitante)) ||
-          (similitud(homeRaw, p.visitante) && similitud(awayRaw, p.local))
-        );
-        if (partido) console.log('[FD] Match flexible:', homeRaw, 'vs', awayRaw, '->', partido.local, 'vs', partido.visitante);
-      }
+      if (partido) {
+        const invertido = partido.local === awayNorm;
+        const resLocal = invertido ? golesAway  : golesHome;
+        const resVis   = invertido ? golesHome  : golesAway;
 
-      if (!partido) {
-        noEncontrados.push(`${homeRaw} vs ${awayRaw} (norm: ${homeNorm} vs ${awayNorm})`);
-        return;
-      }
+        partido.enVivo = esEnVivo;
+        partido.minuto = esEnVivo ? (match.minute ?? '') : null;
 
-      const invertido = partido.local === awayNorm;
-      const resLocal = invertido ? golesAway  : golesHome;
-      const resVis   = invertido ? golesHome  : golesAway;
-
-      // Detectar cambios en marcador O en estado en vivo
-      const marcadorCambio = !partido.resultado ||
-          partido.resultado.local    !== resLocal ||
-          partido.resultado.visitante !== resVis;
-      const vivoCambio = !!partido.enVivo !== esEnVivo;
-
-      partido.enVivo = esEnVivo;
-      partido.minuto = esEnVivo ? (match.minute ?? match.minutesPlayed ?? '') : null;
-      // Si el partido terminó, limpiar enVivo
-      if (esFinal) { partido.enVivo = false; partido.minuto = null; }
-
-      if (marcadorCambio) {
-        partido.resultado = { local: resLocal, visitante: resVis };
-        actualizados++;
-        tickerItems.push(
-          `${partido.local} ${resLocal}-${resVis} ${partido.visitante}${esEnVivo ? ' 🔴' : ''}`
-        );
-      }
-      // Contar como "actualizado" si cambió el estado vivo aunque no el marcador
-      if (vivoCambio && !marcadorCambio) actualizados++;
-
-      if (esEnVivo) liveList.push(partido);
-    });
-
-    // Limpiar enVivo de partidos que la API ya no reporta como en juego
-    // (evita que queden partidos "en vivo" fantasma si la API no los devuelve)
-    estado.partidos.forEach(p => {
-      if (p.enVivo && !liveList.find(l => l.id === p.id)) {
-        p.enVivo = false;
-        p.minuto = null;
-        actualizados++;
+        if (!partido.resultado ||
+            partido.resultado.local    !== resLocal ||
+            partido.resultado.visitante !== resVis) {
+          partido.resultado = { local: resLocal, visitante: resVis };
+          actualizados++;
+          tickerItems.push(
+            `${partido.local} ${resLocal}-${resVis} ${partido.visitante}${esEnVivo ? ' 🔴' : ''}`
+          );
+        }
+        if (esEnVivo) liveList.push(partido);
       }
     });
-
-    if (noEncontrados.length > 0) {
-      console.warn('[FD] Sin match en la app:', noEncontrados);
-      // Mostrar en la barra de estado para diagnóstico visual
-      setTxt('⚠️ Sin match: ' + noEncontrados.join(' | '));
-    }
 
     if (actualizados > 0) {
       guardarEstado();
@@ -1968,17 +1882,17 @@ async function fetchWorldCupResults() {
     }
 
     lastUpdateTime = new Date();
-    setDot('active');
-    setTxt(liveGamesActive
+    dot.className = 'update-dot active';
+    txt.textContent = liveGamesActive
       ? `🔴 ${liveList.length} partido(s) EN VIVO — actualizando cada 30 seg`
-      : `Sincronizado — ${actualizados > 0 ? actualizados + ' resultado(s) nuevo(s)' : 'sin cambios'}`);
-    setTime(ahora());
+      : `Sincronizado — ${actualizados > 0 ? actualizados + ' resultado(s) nuevo(s)' : 'sin cambios'}`;
+    timeEl.textContent = lastUpdateTime.toLocaleTimeString('es-CL', {hour:'2-digit', minute:'2-digit'});
 
   } catch (err) {
-    const dots = document.querySelectorAll('.js-update-dot');
-    const txts = document.querySelectorAll('.js-update-text');
-    dots.forEach(el => el.className = 'update-dot js-update-dot');
-    txts.forEach(el => el.textContent = 'Sin conexión — reintentando...');
+    const dot = document.getElementById('update-dot');
+    const txt = document.getElementById('update-text');
+    dot.className = 'update-dot';
+    txt.textContent = 'Sin conexión — reintentando...';
     console.error('[FD Error]', err);
   }
 }
@@ -1986,28 +1900,12 @@ async function fetchWorldCupResults() {
 
 function iniciarAutoUpdate() {
   fetchWorldCupResults();
-  if (autoUpdateInterval) clearInterval(autoUpdateInterval);
   autoUpdateInterval = setInterval(async () => {
     await fetchWorldCupResults();
     clearInterval(autoUpdateInterval);
     iniciarAutoUpdate();
   }, liveGamesActive ? 30000 : 60000);
 }
-
-// Recupera la sincronización si la pestaña estuvo en segundo plano,
-// suspendida o si el navegador throttleó el setInterval (muy común en
-// móviles). Sin esto, un partido puede terminar mientras la pestaña
-// estaba inactiva y la app nunca se entera al volver a primer plano.
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    fetchWorldCupResults();
-  }
-});
-
-// Respaldo extra: revisa cada vez que la ventana recupera el foco
-window.addEventListener('focus', () => {
-  fetchWorldCupResults();
-});
 
 // ══════════════════════════════════════════════════════════
 //  NAVEGACIÓN
@@ -2131,6 +2029,35 @@ function renderInicio() {
   const pos = getPosicionesOrdenadas();
   document.getElementById('stat-lider').textContent = pos.length > 0 ? pos[0].nombre : '—';
 
+  // ─── Partidos en vivo ───
+  const liveEl = document.getElementById('partidos-en-vivo-home');
+  if (liveEl) {
+    const enVivoAhora = estado.partidos.filter(p => p.enVivo);
+    if (enVivoAhora.length === 0) {
+      liveEl.innerHTML = '';
+    } else {
+      let liveHtml = '<div class="card" style="border:1.5px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.04)">'
+        + '<div class="card-titulo" style="display:flex;align-items:center;gap:8px">'
+        + '<span style="width:9px;height:9px;border-radius:50%;background:#ef4444;display:inline-block;animation:pulse-red 1.5s infinite"></span>'
+        + 'EN VIVO AHORA</div>';
+      enVivoAhora.forEach(p => {
+        liveHtml += `<div class="partido-card live-partido" style="margin-bottom:8px">
+          <div class="partido-header">
+            <span class="tag-fase">${p.fase}${p.grupo && p.grupo !== p.fase ? ' · ' + p.grupo : ''}</span>
+            <span style="background:rgba(239,68,68,0.15);color:#ef4444;font-size:11px;padding:3px 10px;border-radius:10px;font-weight:700;animation:pulse-red 1.5s infinite">🔴 ${p.minuto ? p.minuto + "'" : 'EN VIVO'}</span>
+          </div>
+          <div class="partido-equipos">
+            <div class="equipo"><span class="equipo-bandera">${p.localFlag}</span><span class="equipo-nombre">${p.local}</span></div>
+            <div class="resultado-marcador">${p.resultado ? p.resultado.local : 0} – ${p.resultado ? p.resultado.visitante : 0}</div>
+            <div class="equipo" style="justify-content:flex-end"><span class="equipo-nombre">${p.visitante}</span><span class="equipo-bandera">${p.visitanteFlag}</span></div>
+          </div>
+        </div>`;
+      });
+      liveHtml += '</div>';
+      liveEl.innerHTML = liveHtml;
+    }
+  }
+
   const el = document.getElementById('tabla-rapida-home');
   if (pos.length === 0) {
     el.innerHTML = '<div class="empty-state"><div class="icon">👥</div><p>Agrega participantes para ver la tabla.</p></div>';
@@ -2193,7 +2120,7 @@ function renderPronosticosPartidos() {
   const cont = document.getElementById('lista-pronosticos-partidos');
   const busqueda = (document.getElementById('buscar-partido-pronostico')?.value || '').toLowerCase();
 
-  const fases = ['Grupos','Octavos','Cuartos','Semifinal','Final','Tercer puesto'];
+  const fases = ['Grupos','Dieciseisavos','Octavos','Cuartos','Semifinal','Final','Tercer puesto'];
   let html = `<div class="tabs">`;
   fases.forEach(f => {
     html += `<button class="tab-btn ${filtroFasePronostico===f?'activo':''}" onclick="filtroFasePronostico='${f}';renderPronosticosPartidos()">${f}</button>`;
@@ -2228,12 +2155,13 @@ function renderPronosticosPartidos() {
         return `<span class="pronostico-chip ${clase}">${j.nombre}: ${texto}</span>`;
       }).join('');
 
-      html += `<div class="partido-card">
+      html += `<div class="partido-card" style="cursor:pointer" onclick="abrirModalPronostico('${partido.id}')">
         <div class="partido-header">
           <div style="display:flex;align-items:center;gap:8px">
             <span class="tag-fase tag-${partido.fase.toLowerCase().replace(' ','').replace('ó','o')}">${partido.fase}</span>
             <span class="partido-fecha">${partido.fecha}</span>
           </div>
+          <span style="color:var(--text-muted);font-size:12px;font-family:Inter,sans-serif">Clic para editar</span>
         </div>
         <div class="partido-equipos">
           <div class="equipo"><span class="equipo-bandera">${partido.localFlag}</span><span class="equipo-nombre">${partido.local}</span></div>
@@ -2413,6 +2341,103 @@ function verDetalle(jugadorId) {
 }
 
 // ══════════════════════════════════════════════════════════
+//  MODAL PRONÓSTICO
+// ══════════════════════════════════════════════════════════
+let modalPronosticoId = null;
+
+function abrirModalPronostico(partidoId) {
+  const partido = estado.partidos.find(p => p.id === partidoId);
+  if (!partido) return;
+  modalPronosticoId = partidoId;
+  document.getElementById('modal-pronostico-titulo').textContent = `📝 ${partido.local} vs ${partido.visitante}`;
+
+  let html = `<div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:14px;background:var(--bg-surface);border-radius:var(--radius-sm);margin-bottom:16px;border:1px solid var(--border)">
+    <span style="font-size:26px">${partido.localFlag}</span>
+    <span style="font-weight:700;font-size:16px">${partido.local}</span>
+    <span style="color:var(--text-dim);font-weight:700;font-family:Bebas Neue,sans-serif;letter-spacing:2px">VS</span>
+    <span style="font-weight:700;font-size:16px">${partido.visitante}</span>
+    <span style="font-size:26px">${partido.visitanteFlag}</span>
+  </div>`;
+
+  if (partido.esEliminatoria) {
+    const todosEquipos = Object.values(GRUPOS_MUNDIAL).flat().sort((a,b) => a[0].localeCompare(b[0]));
+    const opciones = (seleccionado) => {
+      let opts = `<option value="Por definir|🏳️" ${seleccionado==='Por definir'?'selected':''}>Por definir</option>`;
+      todosEquipos.forEach(([nombre, bandera]) => {
+        opts += `<option value="${nombre}|${bandera}" ${seleccionado===nombre?'selected':''}>${bandera} ${nombre}</option>`;
+      });
+      return opts;
+    };
+    html += `<div class="alerta alerta-info" style="margin-bottom:12px">Define los equipos clasificados para este cruce.</div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap">
+      <div class="form-grupo" style="flex:1;min-width:140px">
+        <label>Equipo Local</label>
+        <select id="elim-local-select">${opciones(partido.local)}</select>
+      </div>
+      <span style="font-weight:700;color:var(--text-dim);align-self:center;margin-top:18px">VS</span>
+      <div class="form-grupo" style="flex:1;min-width:140px">
+        <label>Equipo Visitante</label>
+        <select id="elim-visitante-select">${opciones(partido.visitante)}</select>
+      </div>
+    </div>`;
+  }
+
+  if (estado.jugadores.length === 0) {
+    html += '<div class="alerta alerta-aviso">Agrega participantes primero.</div>';
+  } else {
+    html += '<div style="display:flex;flex-direction:column;gap:8px">';
+    estado.jugadores.forEach(j => {
+      const pron = (estado.pronosticos[j.id]||{})[partido.id];
+      html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg-surface);border-radius:var(--radius-sm);gap:8px;border:1px solid var(--border);flex-wrap:wrap">
+        <span style="font-weight:600;font-size:14px;flex:1;min-width:70px">${j.nombre}</span>
+        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+          <input type="number" class="input-gol" id="pron-${j.id}-local" min="0" max="20" value="${pron?pron.local:''}" placeholder="0" style="width:48px;font-size:22px">
+          <span class="guion-sep" style="font-size:18px">–</span>
+          <input type="number" class="input-gol" id="pron-${j.id}-visitante" min="0" max="20" value="${pron?pron.visitante:''}" placeholder="0" style="width:48px;font-size:22px">
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  document.getElementById('modal-pronostico-body').innerHTML = html;
+  document.getElementById('modal-pronostico').classList.add('abierto');
+}
+
+function guardarPronosticoModal() {
+  if (!modalPronosticoId) return;
+  const partido = estado.partidos.find(p => p.id === modalPronosticoId);
+
+  if (partido && partido.esEliminatoria) {
+    const localSel = document.getElementById('elim-local-select')?.value;
+    const visitSel = document.getElementById('elim-visitante-select')?.value;
+    if (localSel) {
+      const [nombre, bandera] = localSel.split('|');
+      partido.local = nombre;
+      partido.localFlag = bandera;
+    }
+    if (visitSel) {
+      const [nombre, bandera] = visitSel.split('|');
+      partido.visitante = nombre;
+      partido.visitanteFlag = bandera;
+    }
+  }
+
+  estado.jugadores.forEach(j => {
+    const lv = document.getElementById(`pron-${j.id}-local`)?.value;
+    const vv = document.getElementById(`pron-${j.id}-visitante`)?.value;
+    if (lv !== '' && vv !== '' && lv !== undefined) {
+      if (!estado.pronosticos[j.id]) estado.pronosticos[j.id] = {};
+      estado.pronosticos[j.id][modalPronosticoId] = {local: parseInt(lv), visitante: parseInt(vv)};
+    }
+  });
+  guardarEstado();
+  recalcularPuntajes();
+  cerrarModal('modal-pronostico');
+  if (seccionActual === 'pronosticos') renderPronosticosPartidos();
+  if (seccionActual === 'posiciones') renderPosiciones();
+}
+
 // ══════════════════════════════════════════════════════════
 //  MODAL RESULTADO
 // ══════════════════════════════════════════════════════════
@@ -2571,10 +2596,9 @@ function compartirTablaWhatsApp() {
   jugador.especiales = {campeon:'Brasil',subcampeon:'Inglaterra',goleador:'Harry Kane',semifinalistas:['Holanda','Portugal','España','Inglaterra']};
 })();
 
-// ── PRELOAD SAMPAYO (segunda instancia — eliminada, consolidada arriba) ──
   guardarEstado();
 
-// ── PRELOAD PAPAGAYO (Chuldo) ──
+// ── PRELOAD PAPAGALLO (Chuldo) ──
 // PDF Papagayo: G15=Esco-Marr(1-2), G16=Brasil-Haiti(5-0)
 // G19=USA-Par(2-1), G20=Aus-Tur(1-1), G21=USA-Aus(2-0), G22=Tur-Par(1-1)
 // G29=Cur-CMarfil(0-3), G30=Ecu-Ale(1-2)
@@ -2623,23 +2647,6 @@ function compartirTablaWhatsApp() {
   estado.pronosticos[jugador.id] = pron_herno;
   jugador.especiales = {campeon:'Francia',subcampeon:'Portugal',goleador:'Dembélé',semifinalistas:["Argentina", "Francia", "Portugal", "Turqu\u00eda"]};
 })();;
-// ── RESULTADOS CONFIRMADOS MANUALMENTE ─────────────────────────────
-// Partidos que la API no pudo actualizar en tiempo real.
-// Se aplican al inicio y son sobreescritos si la API luego trae el dato.
-(function aplicarResultadosConfirmados() {
-  var confirmados = {
-    'G62': {local: 1, visitante: 3},  // Uzbekistán 1-3 Colombia  (14/06/2026)
-  };
-  Object.entries(confirmados).forEach(function([id, res]) {
-    var p = estado.partidos.find(function(x){ return x.id === id; });
-    if (p && (!p.resultado || p.resultado.local !== res.local || p.resultado.visitante !== res.visitante)) {
-      p.resultado = res;
-    }
-  });
-  guardarEstado();
-})();
-// ───────────────────────────────────────────────────────────────────
-
 recalcularPuntajes();
 renderInicio();
 iniciarAutoUpdate();
