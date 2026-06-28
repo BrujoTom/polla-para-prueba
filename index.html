@@ -1670,8 +1670,30 @@ function generarPartidosGrupos() {
 
 function generarPartidosElim() {
   var partidos = [];
+  // Dieciseisavos: 4 cruces confirmados, el resto "Por definir"
+  var cruces16 = [
+    {id:'R321', local:'Sud Africa', localFlag:'🇿🇦', visitante:'Canadá', visitanteFlag:'🇨🇦', fecha:'28/01 15:00'},
+    {id:'R322', local:'Brasil', localFlag:'🇧🇷', visitante:'Japón', visitanteFlag:'🇯🇵', fecha:'29/01 13:00'},
+    {id:'R323', local:'Países bajos', localFlag:'🇳🇱', visitante:'Marruecos', visitanteFlag:'🇲🇦', fecha:'29/01 21:00'},
+    {id:'R324', local:'Alemania', localFlag:'🇩🇪', visitante:'Paraguay', visitanteFlag:'🇵🇾', fecha:'29/01 16:00'},
+  ];
+  cruces16.forEach(function(c) {
+    partidos.push({
+      id: c.id, fase:'Dieciseisavos', grupo:'Dieciseisavos',
+      local: c.local, localFlag: c.localFlag,
+      visitante: c.visitante, visitanteFlag: c.visitanteFlag,
+      fecha: c.fecha, resultado: null, clasificado: null, esEliminatoria: true,
+    });
+  });
+  for (var i = 5; i <= 16; i++) {
+    partidos.push({
+      id: 'R32'+i, fase:'Dieciseisavos', grupo:'Dieciseisavos',
+      local:'Por definir', localFlag:'🏳️',
+      visitante:'Por definir', visitanteFlag:'🏳️',
+      fecha:'28/06', resultado:null, clasificado:null, esEliminatoria:true,
+    });
+  }
   var fases = [
-    {fase:'Dieciseisavos',count:16,prefijo:'R32',fechaBase:'28/06'},
     {fase:'Octavos',      count:8, prefijo:'R16',fechaBase:'04/07'},
     {fase:'Cuartos',      count:4, prefijo:'QF', fechaBase:'09/07'},
     {fase:'Semifinal',    count:2, prefijo:'SF', fechaBase:'14/07'},
@@ -1684,7 +1706,7 @@ function generarPartidosElim() {
         id: f.prefijo+i, fase: f.fase, grupo: f.fase,
         local:'Por definir', localFlag:'🏳️',
         visitante:'Por definir', visitanteFlag:'🏳️',
-        fecha: f.fechaBase, resultado: null, esEliminatoria: true,
+        fecha: f.fechaBase, resultado: null, clasificado: null, esEliminatoria: true,
       });
     }
   });
@@ -1703,7 +1725,7 @@ function estadoDefault() {
     pronosticos: {},
     puntajes: {},
     especiales: {},
-    version: 7,
+    version: 8,
   };
 }
 
@@ -1712,7 +1734,7 @@ function cargarEstado() {
     const raw = localStorage.getItem('polla_mundial_2026');
     if (!raw) return estadoDefault();
     const parsed = JSON.parse(raw);
-    if (!parsed.partidos || parsed.version !== 7) {
+    if (!parsed.partidos || parsed.version !== 8) {
       const def = estadoDefault();
       def.jugadores = (parsed.jugadores || []).filter(j => j.nombre.toLowerCase() !== 'papagallo');
       def.pronosticos = parsed.pronosticos || {};
@@ -1968,14 +1990,22 @@ function calcularPuntajeJugador(jugadorId) {
     let pts = 0, tipo = 'fallo';
     if (pl===rl && pv===rv) {
       pts = esElim ? 5 : 3; tipo = 'exacto';
-    } else {
+    } else if (!esElim) {
+      // El bono de "ganador correcto" SOLO aplica en fase de grupos.
+      // En eliminatorias no existe: el único bono fuera del marcador exacto
+      // es el de "clasificado correcto" (ver más abajo).
       const rR = rl>rv?'L':rv>rl?'V':'E';
       const rP = pl>pv?'L':pv>pl?'V':'E';
-      if (rR===rP) { pts = esElim ? 2 : 1; tipo = 'ganador'; }
+      if (rR===rP) { pts = 1; tipo = 'ganador'; }
     }
     if (pts > 0) {
       total += pts;
       detalle.push({partidoId:partido.id, pts, tipo, pron:`${pl}-${pv}`, real:`${rl}-${rv}`, partido:`${partido.local} vs ${partido.visitante}`});
+    }
+    // ── Bonus de "clasificado correcto" en fases eliminatorias ──
+    if (esElim && partido.clasificado && pron.clasificado && pron.clasificado === partido.clasificado) {
+      total += 2;
+      detalle.push({partidoId:partido.id, pts:2, tipo:'clasificado', pron:pron.clasificado, real:partido.clasificado, partido:`Clasificado: ${partido.local} vs ${partido.visitante}`});
     }
   });
 
@@ -2249,6 +2279,10 @@ function renderPronosticosChips(partido) {
       const rP = pron.local>pron.visitante?'L':pron.visitante>pron.local?'V':'E';
       clase = rR===rP ? 'ganador' : 'fallo';
     }
+    if (pron.clasificado) {
+      const clasifOk = partido.clasificado && pron.clasificado === partido.clasificado;
+      texto += ` <span style="opacity:0.85">(${pron.clasificado}${partido.clasificado ? (clasifOk?' ✓':' ✗') : ''})</span>`;
+    }
     return `<span class="pronostico-chip ${clase}">${j.nombre}: ${texto}</span>`;
   }).join('');
 }
@@ -2360,7 +2394,9 @@ function abrirModalPronostico(partidoId) {
     <span style="font-size:26px">${partido.visitanteFlag}</span>
   </div>`;
 
-  if (partido.esEliminatoria) {
+  const equiposPorDefinir = partido.esEliminatoria && (partido.local === 'Por definir' || partido.visitante === 'Por definir');
+
+  if (equiposPorDefinir) {
     const todosEquipos = Object.values(GRUPOS_MUNDIAL).flat().sort((a,b) => a[0].localeCompare(b[0]));
     const opciones = (seleccionado) => {
       let opts = `<option value="Por definir|🏳️" ${seleccionado==='Por definir'?'selected':''}>Por definir</option>`;
@@ -2383,18 +2419,31 @@ function abrirModalPronostico(partidoId) {
     </div>`;
   }
 
+  if (partido.esEliminatoria && !equiposPorDefinir) {
+    html += `<div class="alerta alerta-info" style="margin-bottom:12px">Eliminatoria: marcador de los 90' (5/2 pts) + equipo clasificado pronosticado (2 pts extra).</div>`;
+  }
+
   if (estado.jugadores.length === 0) {
     html += '<div class="alerta alerta-aviso">Agrega participantes primero.</div>';
   } else {
     html += '<div style="display:flex;flex-direction:column;gap:8px">';
     estado.jugadores.forEach(j => {
       const pron = (estado.pronosticos[j.id]||{})[partido.id];
+      let clasifSelect = '';
+      if (partido.esEliminatoria && !equiposPorDefinir) {
+        clasifSelect = `<select id="clasif-${j.id}" style="margin-left:10px;font-size:12px;padding:4px 8px;border-radius:6px">
+          <option value="" ${!pron?.clasificado?'selected':''}>Clasificado: —</option>
+          <option value="${partido.local}" ${pron?.clasificado===partido.local?'selected':''}>${partido.localFlag} ${partido.local}</option>
+          <option value="${partido.visitante}" ${pron?.clasificado===partido.visitante?'selected':''}>${partido.visitanteFlag} ${partido.visitante}</option>
+        </select>`;
+      }
       html += `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg-surface);border-radius:var(--radius-sm);gap:8px;border:1px solid var(--border);flex-wrap:wrap">
         <span style="font-weight:600;font-size:14px;flex:1;min-width:70px">${j.nombre}</span>
         <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
           <input type="number" class="input-gol" id="pron-${j.id}-local" min="0" max="20" value="${pron?pron.local:''}" placeholder="0" style="width:48px;font-size:22px">
           <span class="guion-sep" style="font-size:18px">–</span>
           <input type="number" class="input-gol" id="pron-${j.id}-visitante" min="0" max="20" value="${pron?pron.visitante:''}" placeholder="0" style="width:48px;font-size:22px">
+          ${clasifSelect}
         </div>
       </div>`;
     });
@@ -2427,9 +2476,12 @@ function guardarPronosticoModal() {
   estado.jugadores.forEach(j => {
     const lv = document.getElementById(`pron-${j.id}-local`)?.value;
     const vv = document.getElementById(`pron-${j.id}-visitante`)?.value;
+    const clasif = document.getElementById(`clasif-${j.id}`)?.value;
     if (lv !== '' && vv !== '' && lv !== undefined) {
       if (!estado.pronosticos[j.id]) estado.pronosticos[j.id] = {};
-      estado.pronosticos[j.id][modalPronosticoId] = {local: parseInt(lv), visitante: parseInt(vv)};
+      const entry = {local: parseInt(lv), visitante: parseInt(vv)};
+      if (clasif) entry.clasificado = clasif;
+      estado.pronosticos[j.id][modalPronosticoId] = entry;
     }
   });
   guardarEstado();
@@ -2648,6 +2700,68 @@ function compartirTablaWhatsApp() {
   estado.pronosticos[jugador.id] = pron_herno;
   jugador.especiales = {campeon:'Francia',subcampeon:'Portugal',goleador:'Dembélé',semifinalistas:["Argentina", "Francia", "Portugal", "Turqu\u00eda"]};
 })();;
+
+// ── PRELOAD DIECISEISAVOS — SAMPAYO ──
+(function() {
+  var pron16_sampayo = {"R321": {"local": 1, "visitante": 2, "clasificado": "Canad\u00e1"}, "R322": {"local": 3, "visitante": 1, "clasificado": "Brasil"}, "R323": {"local": 1, "visitante": 2, "clasificado": "Marruecos"}, "R324": {"local": 3, "visitante": 0, "clasificado": "Alemania"}};
+  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'sampayo'; });
+  if (jugador) {
+    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
+    Object.assign(estado.pronosticos[jugador.id], pron16_sampayo);
+  }
+})();
+
+// ── PRELOAD DIECISEISAVOS — CRISTIANO ──
+(function() {
+  var pron16_cristiano = {"R321": {"local": 2, "visitante": 1, "clasificado": "Sud Africa"}, "R322": {"local": 3, "visitante": 2, "clasificado": "Brasil"}, "R323": {"local": 2, "visitante": 1, "clasificado": "Pa\u00edses bajos"}, "R324": {"local": 2, "visitante": 1, "clasificado": "Alemania"}};
+  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'cristiano'; });
+  if (jugador) {
+    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
+    Object.assign(estado.pronosticos[jugador.id], pron16_cristiano);
+  }
+})();
+
+// ── PRELOAD DIECISEISAVOS — MILO ──
+(function() {
+  var pron16_milo = {"R321": {"local": 1, "visitante": 2, "clasificado": "Canad\u00e1"}, "R322": {"local": 2, "visitante": 0, "clasificado": "Brasil"}, "R323": {"local": 0, "visitante": 1, "clasificado": "Marruecos"}, "R324": {"local": 3, "visitante": 1, "clasificado": "Alemania"}};
+  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'milo'; });
+  if (jugador) {
+    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
+    Object.assign(estado.pronosticos[jugador.id], pron16_milo);
+  }
+})();
+
+// ── PRELOAD DIECISEISAVOS — PAPAGAYO ──
+(function() {
+  var pron16_papagayo = {"R321": {"local": 1, "visitante": 2, "clasificado": "Canad\u00e1"}, "R322": {"local": 2, "visitante": 2, "clasificado": "Jap\u00f3n"}, "R323": {"local": 2, "visitante": 2, "clasificado": "Pa\u00edses bajos"}, "R324": {"local": 3, "visitante": 1, "clasificado": "Alemania"}};
+  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'papagayo'; });
+  if (jugador) {
+    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
+    Object.assign(estado.pronosticos[jugador.id], pron16_papagayo);
+  }
+})();
+  guardarEstado();
+
+// ── PRELOAD DIECISEISAVOS — PABLINHO ──
+(function() {
+  var pron16_pablinho = {"R321": {"local": 0, "visitante": 2, "clasificado": "Canad\u00e1"}, "R322": {"local": 4, "visitante": 1, "clasificado": "Brasil"}, "R323": {"local": 2, "visitante": 2, "clasificado": "Marruecos"}, "R324": {"local": 3, "visitante": 0, "clasificado": "Alemania"}};
+  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'pablinho'; });
+  if (jugador) {
+    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
+    Object.assign(estado.pronosticos[jugador.id], pron16_pablinho);
+  }
+})();
+
+// ── PRELOAD DIECISEISAVOS — HERNO ──
+(function() {
+  var pron16_herno = {"R321": {"local": 1, "visitante": 2, "clasificado": "Canad\u00e1"}, "R322": {"local": 2, "visitante": 1, "clasificado": "Brasil"}, "R323": {"local": 2, "visitante": 2, "clasificado": "Marruecos"}, "R324": {"local": 3, "visitante": 0, "clasificado": "Alemania"}};
+  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'herno'; });
+  if (jugador) {
+    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
+    Object.assign(estado.pronosticos[jugador.id], pron16_herno);
+  }
+})();
+  guardarEstado();
 recalcularPuntajes();
 renderInicio();
 iniciarAutoUpdate();
