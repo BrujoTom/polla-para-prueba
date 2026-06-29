@@ -1842,17 +1842,29 @@ async function fetchWorldCupResults() {
       const homeRaw = match.homeTeam?.name || match.homeTeam?.shortName || '';
       const awayRaw = match.awayTeam?.name || match.awayTeam?.shortName || '';
       console.log('[FD]', st, '|', homeRaw, 'vs', awayRaw, '|',
-        match.score?.fullTime?.home, '-', match.score?.fullTime?.away);
+        match.score?.fullTime?.home, '-', match.score?.fullTime?.away,
+        '| duration:', match.score?.duration, '| winner:', match.score?.winner);
 
       const homeNorm = normalizeTeamName(homeRaw);
       const awayNorm = normalizeTeamName(awayRaw);
 
+      // El marcador de "90 minutos" (tiempo reglamentario) para puntaje de pronósticos.
+      // football-data.org reporta fullTime como el resultado del partido completo
+      // (incluyendo alargue si lo hubo), salvo que existan campos regularTime;
+      // por eso, cuando duration no es REGULAR, usamos regularTime si está disponible
+      // y solo recurrimos a fullTime como respaldo.
+      const duration = match.score?.duration; // REGULAR | EXTRA_TIME | PENALTY_SHOOTOUT
+      const tiempoReg = match.score?.regularTime;
       const golesHome = esEnVivo
         ? (match.score?.fullTime?.home ?? match.score?.halfTime?.home ?? 0)
-        : (match.score?.fullTime?.home ?? 0);
+        : (duration && duration !== 'REGULAR' && tiempoReg?.home != null
+            ? tiempoReg.home
+            : (match.score?.fullTime?.home ?? 0));
       const golesAway = esEnVivo
         ? (match.score?.fullTime?.away ?? match.score?.halfTime?.away ?? 0)
-        : (match.score?.fullTime?.away ?? 0);
+        : (duration && duration !== 'REGULAR' && tiempoReg?.away != null
+            ? tiempoReg.away
+            : (match.score?.fullTime?.away ?? 0));
 
       const partido = estado.partidos.find(p =>
         (p.local === homeNorm && p.visitante === awayNorm) ||
@@ -1876,6 +1888,23 @@ async function fetchWorldCupResults() {
             `${partido.local} ${resLocal}-${resVis} ${partido.visitante}${esEnVivo ? ' 🔴' : ''}`
           );
         }
+
+        // ── Detección automática de equipo clasificado (eliminatorias) ──
+        // score.winner refleja al ganador DEFINITIVO del cruce (90' / alargue / penales).
+        // score.duration indica si se decidió en tiempo regular, alargue o penales.
+        if (partido.esEliminatoria && esFinal && match.score?.winner) {
+          const winner = match.score.winner; // HOME_TEAM | AWAY_TEAM | DRAW
+          let equipoClasificado = null;
+          if (winner === 'HOME_TEAM') equipoClasificado = invertido ? partido.visitante : partido.local;
+          else if (winner === 'AWAY_TEAM') equipoClasificado = invertido ? partido.local : partido.visitante;
+          // DRAW no debería ocurrir en eliminatorias (siempre hay un ganador final),
+          // pero si la API lo reporta así, no asignamos clasificado para evitar datos erróneos.
+          if (equipoClasificado && partido.clasificado !== equipoClasificado) {
+            partido.clasificado = equipoClasificado;
+            actualizados++;
+          }
+        }
+
         if (esEnVivo) liveList.push(partido);
       }
     });
