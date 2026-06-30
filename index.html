@@ -1670,12 +1670,24 @@ function generarPartidosGrupos() {
 
 function generarPartidosElim() {
   var partidos = [];
-  // Dieciseisavos: 4 cruces confirmados, el resto "Por definir"
+  // Dieciseisavos: 16 cruces completos
   var cruces16 = [
-    {id:'R321', local:'Sud Africa', localFlag:'🇿🇦', visitante:'Canadá', visitanteFlag:'🇨🇦', fecha:'28/01 15:00'},
-    {id:'R322', local:'Brasil', localFlag:'🇧🇷', visitante:'Japón', visitanteFlag:'🇯🇵', fecha:'29/01 13:00'},
-    {id:'R323', local:'Países bajos', localFlag:'🇳🇱', visitante:'Marruecos', visitanteFlag:'🇲🇦', fecha:'29/01 21:00'},
-    {id:'R324', local:'Alemania', localFlag:'🇩🇪', visitante:'Paraguay', visitanteFlag:'🇵🇾', fecha:'29/01 16:00'},
+    {id:'R321',  local:'Sud Africa',       localFlag:'🇿🇦', visitante:'Canadá',     visitanteFlag:'🇨🇦', fecha:'28/06 15:00'},
+    {id:'R322',  local:'Brasil',           localFlag:'🇧🇷', visitante:'Japón',      visitanteFlag:'🇯🇵', fecha:'29/06 13:00'},
+    {id:'R323',  local:'Países bajos',     localFlag:'🇳🇱', visitante:'Marruecos',  visitanteFlag:'🇲🇦', fecha:'29/06 21:00'},
+    {id:'R324',  local:'Alemania',         localFlag:'🇩🇪', visitante:'Paraguay',   visitanteFlag:'🇵🇾', fecha:'29/06 16:00'},
+    {id:'R325',  local:'Costa de Marfil', localFlag:'🇨🇮', visitante:'Noruega',    visitanteFlag:'🇳🇴', fecha:'30/06 13:00'},
+    {id:'R326',  local:'Francia',          localFlag:'🇫🇷', visitante:'Suecia',     visitanteFlag:'🇸🇪', fecha:'30/06 17:00'},
+    {id:'R327',  local:'México',           localFlag:'🇲🇽', visitante:'Ecuador',    visitanteFlag:'🇪🇨', fecha:'30/06 21:00'},
+    {id:'R328',  local:'Inglaterra',       localFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', visitante:'Congo',      visitanteFlag:'🇨🇩', fecha:'01/07 12:00'},
+    {id:'R329',  local:'Bélgica',          localFlag:'🇧🇪', visitante:'Senegal',    visitanteFlag:'🇸🇳', fecha:'01/07 16:00'},
+    {id:'R3210', local:'EEUU',             localFlag:'🇺🇸', visitante:'Bosnia',     visitanteFlag:'🇧🇦', fecha:'01/07 20:00'},
+    {id:'R3211', local:'España',           localFlag:'🇪🇸', visitante:'Austria',    visitanteFlag:'🇦🇹', fecha:'02/07 15:00'},
+    {id:'R3212', local:'Portugal',         localFlag:'🇵🇹', visitante:'Croacia',    visitanteFlag:'🇭🇷', fecha:'02/07 19:00'},
+    {id:'R3213', local:'Suiza',            localFlag:'🇨🇭', visitante:'Argelia',    visitanteFlag:'🇩🇿', fecha:'02/07 23:00'},
+    {id:'R3214', local:'Australia',        localFlag:'🇦🇺', visitante:'Egipto',     visitanteFlag:'🇪🇬', fecha:'03/07 14:00'},
+    {id:'R3215', local:'Argentina',        localFlag:'🇦🇷', visitante:'Cabo verde', visitanteFlag:'🇨🇻', fecha:'03/07 18:00'},
+    {id:'R3216', local:'Colombia',         localFlag:'🇨🇴', visitante:'Ghana',      visitanteFlag:'🇬🇭', fecha:'03/07 21:30'},
   ];
   cruces16.forEach(function(c) {
     partidos.push({
@@ -1685,14 +1697,6 @@ function generarPartidosElim() {
       fecha: c.fecha, resultado: null, clasificado: null, esEliminatoria: true,
     });
   });
-  for (var i = 5; i <= 16; i++) {
-    partidos.push({
-      id: 'R32'+i, fase:'Dieciseisavos', grupo:'Dieciseisavos',
-      local:'Por definir', localFlag:'🏳️',
-      visitante:'Por definir', visitanteFlag:'🏳️',
-      fecha:'28/06', resultado:null, clasificado:null, esEliminatoria:true,
-    });
-  }
   var fases = [
     {fase:'Octavos',      count:8, prefijo:'R16',fechaBase:'04/07'},
     {fase:'Cuartos',      count:4, prefijo:'QF', fechaBase:'09/07'},
@@ -1725,7 +1729,7 @@ function estadoDefault() {
     pronosticos: {},
     puntajes: {},
     especiales: {},
-    version: 8,
+    version: 9,
   };
 }
 
@@ -1734,7 +1738,7 @@ function cargarEstado() {
     const raw = localStorage.getItem('polla_mundial_2026');
     if (!raw) return estadoDefault();
     const parsed = JSON.parse(raw);
-    if (!parsed.partidos || parsed.version !== 8) {
+    if (!parsed.partidos || parsed.version !== 9) {
       const def = estadoDefault();
       def.jugadores = (parsed.jugadores || []).filter(j => j.nombre.toLowerCase() !== 'papagallo');
       def.pronosticos = parsed.pronosticos || {};
@@ -2791,6 +2795,60 @@ function compartirTablaWhatsApp() {
   }
 })();
   guardarEstado();
+// ── PRELOAD DIECISEISAVOS — SAMPAYO (R325-R3216) ──
+(function() {
+  var pron16b_sampayo = {"R325": {"local": 1, "visitante": 2, "clasificado": "Noruega"}, "R326": {"local": 3, "visitante": 0, "clasificado": "Francia"}, "R327": {"local": 2, "visitante": 0, "clasificado": "México"}, "R328": {"local": 3, "visitante": 0, "clasificado": "Inglaterra"}, "R329": {"local": 2, "visitante": 1, "clasificado": "Bélgica"}, "R3210": {"local": 2, "visitante": 0, "clasificado": "EEUU"}, "R3211": {"local": 3, "visitante": 1, "clasificado": "España"}, "R3212": {"local": 2, "visitante": 1, "clasificado": "Portugal"}, "R3213": {"local": 2, "visitante": 0, "clasificado": "Suiza"}, "R3214": {"local": 0, "visitante": 1, "clasificado": "Egipto"}, "R3215": {"local": 4, "visitante": 0, "clasificado": "Argentina"}, "R3216": {"local": 2, "visitante": 1, "clasificado": "Colombia"}};
+  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'sampayo'; });
+  if (jugador) {
+    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
+    Object.assign(estado.pronosticos[jugador.id], pron16b_sampayo);
+  }
+})();
+// ── PRELOAD DIECISEISAVOS — CRISTIANO (R325-R3216) ──
+(function() {
+  var pron16b_cristiano = {"R325": {"local": 2, "visitante": 2, "clasificado": "Costa de Marfil"}, "R326": {"local": 3, "visitante": 1, "clasificado": "Francia"}, "R327": {"local": 2, "visitante": 3, "clasificado": "México"}, "R328": {"local": 2, "visitante": 1, "clasificado": "Inglaterra"}, "R329": {"local": 2, "visitante": 2, "clasificado": "Bélgica"}, "R3210": {"local": 3, "visitante": 1, "clasificado": "EEUU"}, "R3211": {"local": 1, "visitante": 1, "clasificado": "España"}, "R3212": {"local": 2, "visitante": 2, "clasificado": "Portugal"}, "R3213": {"local": 1, "visitante": 3, "clasificado": "Argelia"}, "R3214": {"local": 1, "visitante": 1, "clasificado": "Egipto"}, "R3215": {"local": 3, "visitante": 1, "clasificado": "Argentina"}, "R3216": {"local": 2, "visitante": 2, "clasificado": "Colombia"}};
+  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'cristiano'; });
+  if (jugador) {
+    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
+    Object.assign(estado.pronosticos[jugador.id], pron16b_cristiano);
+  }
+})();
+// ── PRELOAD DIECISEISAVOS — MILO (R325-R3216) ──
+(function() {
+  var pron16b_milo = {"R325": {"local": 0, "visitante": 2, "clasificado": "Noruega"}, "R326": {"local": 3, "visitante": 1, "clasificado": "Francia"}, "R327": {"local": 1, "visitante": 2, "clasificado": "Ecuador"}, "R328": {"local": 3, "visitante": 0, "clasificado": "Inglaterra"}, "R329": {"local": 2, "visitante": 0, "clasificado": "Bélgica"}, "R3210": {"local": 1, "visitante": 1, "clasificado": "Bosnia"}, "R3211": {"local": 3, "visitante": 0, "clasificado": "España"}, "R3212": {"local": 1, "visitante": 3, "clasificado": "Croacia"}, "R3213": {"local": 1, "visitante": 0, "clasificado": "Suiza"}, "R3214": {"local": 0, "visitante": 1, "clasificado": "Egipto"}, "R3215": {"local": 4, "visitante": 0, "clasificado": "Argentina"}, "R3216": {"local": 1, "visitante": 0, "clasificado": "Colombia"}};
+  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'milo'; });
+  if (jugador) {
+    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
+    Object.assign(estado.pronosticos[jugador.id], pron16b_milo);
+  }
+})();
+// ── PRELOAD DIECISEISAVOS — PABLINHO (R325-R3216) ──
+(function() {
+  var pron16b_pablinho = {"R325": {"local": 2, "visitante": 2, "clasificado": "Noruega"}, "R326": {"local": 3, "visitante": 1, "clasificado": "Francia"}, "R327": {"local": 1, "visitante": 1, "clasificado": "México"}, "R328": {"local": 3, "visitante": 0, "clasificado": "Inglaterra"}, "R329": {"local": 1, "visitante": 2, "clasificado": "Senegal"}, "R3210": {"local": 2, "visitante": 0, "clasificado": "EEUU"}, "R3211": {"local": 1, "visitante": 1, "clasificado": "Austria"}, "R3212": {"local": 1, "visitante": 2, "clasificado": "Croacia"}, "R3213": {"local": 2, "visitante": 0, "clasificado": "Suiza"}, "R3214": {"local": 2, "visitante": 2, "clasificado": "Australia"}, "R3215": {"local": 3, "visitante": 0, "clasificado": "Argentina"}, "R3216": {"local": 3, "visitante": 0, "clasificado": "Colombia"}};
+  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'pablinho'; });
+  if (jugador) {
+    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
+    Object.assign(estado.pronosticos[jugador.id], pron16b_pablinho);
+  }
+})();
+// ── PRELOAD DIECISEISAVOS — PAPAGAYO (R325-R3216) ──
+(function() {
+  var pron16b_papagayo = {"R325": {"local": 1, "visitante": 1, "clasificado": "Noruega"}, "R326": {"local": 3, "visitante": 1, "clasificado": "Francia"}, "R327": {"local": 2, "visitante": 1, "clasificado": "México"}, "R328": {"local": 2, "visitante": 0, "clasificado": "Inglaterra"}, "R329": {"local": 1, "visitante": 1, "clasificado": "Senegal"}, "R3210": {"local": 3, "visitante": 1, "clasificado": "EEUU"}, "R3211": {"local": 3, "visitante": 0, "clasificado": "España"}, "R3212": {"local": 2, "visitante": 2, "clasificado": "Croacia"}, "R3213": {"local": 1, "visitante": 1, "clasificado": "Suiza"}, "R3214": {"local": 1, "visitante": 2, "clasificado": "Egipto"}, "R3215": {"local": 3, "visitante": 0, "clasificado": "Argentina"}, "R3216": {"local": 2, "visitante": 0, "clasificado": "Colombia"}};
+  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'papagayo'; });
+  if (jugador) {
+    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
+    Object.assign(estado.pronosticos[jugador.id], pron16b_papagayo);
+  }
+})();
+// ── PRELOAD DIECISEISAVOS — HERNO (R325-R3216) ──
+(function() {
+  var pron16b_herno = {"R325": {"local": 0, "visitante": 2, "clasificado": "Noruega"}, "R326": {"local": 4, "visitante": 1, "clasificado": "Francia"}, "R327": {"local": 1, "visitante": 1, "clasificado": "Ecuador"}, "R328": {"local": 2, "visitante": 0, "clasificado": "Inglaterra"}, "R329": {"local": 1, "visitante": 1, "clasificado": "Bélgica"}, "R3210": {"local": 2, "visitante": 1, "clasificado": "EEUU"}, "R3211": {"local": 2, "visitante": 0, "clasificado": "España"}, "R3212": {"local": 2, "visitante": 2, "clasificado": "Portugal"}, "R3213": {"local": 2, "visitante": 0, "clasificado": "Suiza"}, "R3214": {"local": 1, "visitante": 0, "clasificado": "Australia"}, "R3215": {"local": 2, "visitante": 0, "clasificado": "Argentina"}, "R3216": {"local": 3, "visitante": 2, "clasificado": "Colombia"}};
+  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'herno'; });
+  if (jugador) {
+    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
+    Object.assign(estado.pronosticos[jugador.id], pron16b_herno);
+  }
+})();
 recalcularPuntajes();
 renderInicio();
 iniciarAutoUpdate();
