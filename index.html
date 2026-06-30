@@ -1528,7 +1528,7 @@ main {
     <div class="card-titulo">⚽ Resultados de Partidos</div>
     <div class="alerta alerta-info" id="resultados-auto-info" style="display:flex;align-items:center;gap:10px">
       <span id="update-dot" class="update-dot"></span>
-      <span>Los resultados se sincronizan automáticamente con ESPN. <span id="update-text">Conectando...</span> <span id="update-time" style="color:var(--text-dim)"></span></span>
+      <span><span id="update-text">Sincronizando resultados...</span> <span id="update-time" style="color:var(--text-dim)"></span></span>
     </div>
     <div id="lista-resultados-partidos"></div>
   </div>
@@ -2219,13 +2219,12 @@ function renderPronosticosPartidos() {
         return `<span class="pronostico-chip ${clase}">${j.nombre}: ${texto}</span>`;
       }).join('');
 
-      html += `<div class="partido-card" style="cursor:pointer" onclick="abrirModalPronostico('${partido.id}')">
+      html += `<div class="partido-card">
         <div class="partido-header">
           <div style="display:flex;align-items:center;gap:8px">
             <span class="tag-fase tag-${partido.fase.toLowerCase().replace(' ','').replace('ó','o')}">${partido.fase}</span>
             <span class="partido-fecha">${partido.fecha}</span>
           </div>
-          <span style="color:var(--text-muted);font-size:12px;font-family:Inter,sans-serif">Clic para editar</span>
         </div>
         <div class="partido-equipos">
           <div class="equipo"><span class="equipo-bandera">${partido.localFlag}</span><span class="equipo-nombre">${partido.local}</span></div>
