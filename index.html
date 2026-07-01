@@ -1860,16 +1860,27 @@ async function fetchWorldCupResults() {
       // y solo recurrimos a fullTime como respaldo.
       const duration = match.score?.duration; // REGULAR | EXTRA_TIME | PENALTY_SHOOTOUT
       const tiempoReg = match.score?.regularTime;
-      const golesHome = esEnVivo
-        ? (match.score?.fullTime?.home ?? match.score?.halfTime?.home ?? 0)
-        : (duration && duration !== 'REGULAR' && tiempoReg?.home != null
-            ? tiempoReg.home
-            : (match.score?.fullTime?.home ?? 0));
-      const golesAway = esEnVivo
-        ? (match.score?.fullTime?.away ?? match.score?.halfTime?.away ?? 0)
-        : (duration && duration !== 'REGULAR' && tiempoReg?.away != null
-            ? tiempoReg.away
-            : (match.score?.fullTime?.away ?? 0));
+
+      // Si el partido se decidió en alargue/penales Y no hay regularTime disponible,
+      // NO actualizamos el marcador desde la API — el resultado de 90' ya debería
+      // estar guardado de cuando el partido estaba en vivo. Esto evita que la API
+      // sobreescriba el 2-2 con el 3-2 final.
+      const esAlargueOPenales = duration === 'EXTRA_TIME' || duration === 'PENALTY_SHOOTOUT';
+      const sinRegularTime = tiempoReg?.home == null;
+      const saltarMarcador = esFinal && esAlargueOPenales && sinRegularTime;
+
+      const golesHome = saltarMarcador ? null
+        : esEnVivo
+          ? (match.score?.fullTime?.home ?? match.score?.halfTime?.home ?? 0)
+          : (esAlargueOPenales && tiempoReg?.home != null
+              ? tiempoReg.home
+              : (match.score?.fullTime?.home ?? 0));
+      const golesAway = saltarMarcador ? null
+        : esEnVivo
+          ? (match.score?.fullTime?.away ?? match.score?.halfTime?.away ?? 0)
+          : (esAlargueOPenales && tiempoReg?.away != null
+              ? tiempoReg.away
+              : (match.score?.fullTime?.away ?? 0));
 
       const partido = estado.partidos.find(p =>
         (p.local === homeNorm && p.visitante === awayNorm) ||
@@ -1884,9 +1895,9 @@ async function fetchWorldCupResults() {
         partido.enVivo = esEnVivo;
         partido.minuto = esEnVivo ? (match.minute ?? '') : null;
 
-        // Si el partido tiene resultado confirmado manualmente (partido.manual = true),
-        // la API NO puede sobreescribirlo — el resultado de 90' ya está guardado.
-        if (!partido.manual) {
+        // Si saltarMarcador = true (alargue/penales sin regularTime), no tocamos el resultado.
+        // El marcador de 90' ya quedó guardado cuando el partido estaba en vivo.
+        if (!partido.manual && golesHome !== null && golesAway !== null) {
           if (!partido.resultado ||
               partido.resultado.local    !== resLocal ||
               partido.resultado.visitante !== resVis) {
