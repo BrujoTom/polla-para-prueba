@@ -1723,6 +1723,20 @@ function generarPartidosElim() {
 // ══════════════════════════════════════════════════════════
 let estado = cargarEstado();
 
+// ── MIGRACIÓN: corregir nombres de equipos en partidos guardados en localStorage ──
+// Si el usuario tenía una versión anterior donde R3210 decía 'EEUU', esto lo corrige.
+(function migrarNombresEquipos() {
+  var correcciones = { 'EEUU': 'Usa', 'Bosnia y Herz.': 'Bosnia', 'RD Congo': 'Congo',
+    'C. Verde': 'Cabo verde', 'C. de Marfil': 'Costa de Marfíl', 'Costa de Marfil': 'Costa de Marfíl',
+    'Países Bajos': 'Países bajos', 'Irak': 'Irák', 'EE.UU.': 'Usa', 'Uzbekistán': 'Uzbekistan' };
+  var cambios = 0;
+  (estado.partidos || []).forEach(function(p) {
+    if (correcciones[p.local])     { p.local     = correcciones[p.local];     cambios++; }
+    if (correcciones[p.visitante]) { p.visitante = correcciones[p.visitante]; cambios++; }
+  });
+  if (cambios > 0) { guardarEstado(); console.log('[Migración] Corregidos', cambios, 'nombres de equipos en partidos guardados'); }
+})();
+
 function estadoDefault() {
   return {
     jugadores: [],
