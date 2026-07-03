@@ -1403,7 +1403,7 @@ main {
             <span class="lab">Líder actual</span>
           </div>
           <div class="hero-stat">
-            <span class="num">$50k</span>
+            <span class="num">$40k</span>
             <span class="lab">Premio 1°</span>
           </div>
           <div class="hero-stat">
@@ -2172,7 +2172,7 @@ function renderInicio() {
   pos.slice(0,6).forEach((j,i) => {
     const pts = (estado.puntajes[j.id]||{total:0}).total;
     let premioTag = '';
-    if (i===0) premioTag='<span class="premio-tag premio-1">🥇 $50k</span>';
+    if (i===0) premioTag='<span class="premio-tag premio-1">🥇 $40k</span>';
     if (i===1) premioTag='<span class="premio-tag premio-2">🥈 $10k</span>';
     html += `<tr class="pos-${i+1}">
       <td class="pos-num">${i+1}</td>
@@ -2408,7 +2408,7 @@ function renderPosiciones() {
     const ganadores = pj.detalle.filter(d => d.tipo==='ganador').length;
     const bonusPts = pj.detalle.filter(d => d.tipo==='bonus').reduce((a,b) => a+b.pts, 0);
     let premioTag = '';
-    if (i===0) premioTag='<span class="premio-tag premio-1">🥇 $50k</span>';
+    if (i===0) premioTag='<span class="premio-tag premio-1">🥇 $40k</span>';
     if (i===1) premioTag='<span class="premio-tag premio-2">🥈 $10k</span>';
     html += `<tr class="pos-${i+1}">
       <td class="pos-num">${i+1}</td>
@@ -2613,7 +2613,7 @@ function compartirTablaWhatsApp() {
     const exactos = pj.detalle ? pj.detalle.filter(d => d.tipo==='exacto').length : 0;
     const ganadores = pj.detalle ? pj.detalle.filter(d => d.tipo==='ganador').length : 0;
     const medal = medallas[i] || `${i+1}.`;
-    const premio = i===0 ? ' 💰$50k' : i===1 ? ' 💰$10k' : '';
+    const premio = i===0 ? ' 💰$40k' : i===1 ? ' 💰$10k' : '';
     msg += `${medal} *${j.nombre}*${premio}\n`;
     msg += `   ${pts} pts`;
     if (exactos > 0) msg += `  🎯${exactos} exactos`;
