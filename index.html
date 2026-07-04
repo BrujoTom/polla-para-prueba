@@ -1762,6 +1762,31 @@ let estado = cargarEstado();
   if (cambios > 0) { guardarEstado(); console.log('[Migración] Corregidos', cambios, 'nombres de equipos en partidos guardados'); }
 })();
 
+// ── MIGRACIÓN: actualizar partidos de Octavos con equipos y fechas reales ──
+(function migrarOctavos() {
+  var crucesOct = [
+    {id:'R161', local:'Canadá',    localFlag:'🇨🇦', visitante:'Marruecos',  visitanteFlag:'🇲🇦', fecha:'04/07 13:00'},
+    {id:'R162', local:'Paraguay',  localFlag:'🇵🇾', visitante:'Francia',    visitanteFlag:'🇫🇷', fecha:'04/07 17:00'},
+    {id:'R163', local:'Brasil',    localFlag:'🇧🇷', visitante:'Noruega',    visitanteFlag:'🇳🇴', fecha:'05/07 16:00'},
+    {id:'R164', local:'México',    localFlag:'🇲🇽', visitante:'Inglaterra', visitanteFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', fecha:'05/07 20:00'},
+    {id:'R165', local:'Portugal',  localFlag:'🇵🇹', visitante:'España',     visitanteFlag:'🇪🇸', fecha:'06/07 15:00'},
+    {id:'R166', local:'Usa',       localFlag:'🇺🇸', visitante:'Bélgica',    visitanteFlag:'🇧🇪', fecha:'06/07 20:00'},
+    {id:'R167', local:'Argentina', localFlag:'🇦🇷', visitante:'Egipto',     visitanteFlag:'🇪🇬', fecha:'07/07 12:00'},
+    {id:'R168', local:'Suiza',     localFlag:'🇨🇭', visitante:'Colombia',   visitanteFlag:'🇨🇴', fecha:'07/07 16:00'},
+  ];
+  var cambios = 0;
+  crucesOct.forEach(function(cruce) {
+    var p = (estado.partidos || []).find(function(x){ return x.id === cruce.id; });
+    if (p && (p.local === 'Por definir' || p.local !== cruce.local)) {
+      p.local = cruce.local; p.localFlag = cruce.localFlag;
+      p.visitante = cruce.visitante; p.visitanteFlag = cruce.visitanteFlag;
+      p.fecha = cruce.fecha; p.fase = 'Octavos'; p.grupo = 'Octavos';
+      cambios++;
+    }
+  });
+  if (cambios > 0) { guardarEstado(); console.log('[Migración] Octavos actualizados:', cambios, 'partidos'); }
+})();
+
 function estadoDefault() {
   return {
     jugadores: [],
