@@ -1671,30 +1671,33 @@ function generarPartidosGrupos() {
 
 function generarPartidosElim() {
   var partidos = [];
+  // Dieciseisavos: 16 cruces completos
   var cruces16 = [
-    {id:'R321',  local:'Sud Africa',      localFlag:'🇿🇦', visitante:'Canadá',      visitanteFlag:'🇨🇦', fecha:'28/06 15:00'},
-    {id:'R322',  local:'Brasil',          localFlag:'🇧🇷', visitante:'Japón',       visitanteFlag:'🇯🇵', fecha:'29/06 13:00'},
-    {id:'R323',  local:'Países bajos',    localFlag:'🇳🇱', visitante:'Marruecos',   visitanteFlag:'🇲🇦', fecha:'29/06 21:00'},
-    {id:'R324',  local:'Alemania',        localFlag:'🇩🇪', visitante:'Paraguay',    visitanteFlag:'🇵🇾', fecha:'29/06 16:00'},
-    {id:'R325',  local:'Costa de Marfil',localFlag:'🇨🇮', visitante:'Noruega',     visitanteFlag:'🇳🇴', fecha:'30/06 13:00'},
-    {id:'R326',  local:'Francia',         localFlag:'🇫🇷', visitante:'Suecia',      visitanteFlag:'🇸🇪', fecha:'30/06 17:00'},
-    {id:'R327',  local:'México',          localFlag:'🇲🇽', visitante:'Ecuador',     visitanteFlag:'🇪🇨', fecha:'30/06 21:00'},
-    {id:'R328',  local:'Inglaterra',      localFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', visitante:'Congo',       visitanteFlag:'🇨🇩', fecha:'01/07 12:00'},
-    {id:'R329',  local:'Bélgica',         localFlag:'🇧🇪', visitante:'Senegal',     visitanteFlag:'🇸🇳', fecha:'01/07 16:00'},
-    {id:'R3210', local:'Usa',             localFlag:'🇺🇸', visitante:'Bosnia',      visitanteFlag:'🇧🇦', fecha:'01/07 20:00'},
-    {id:'R3211', local:'España',          localFlag:'🇪🇸', visitante:'Austria',     visitanteFlag:'🇦🇹', fecha:'02/07 15:00'},
-    {id:'R3212', local:'Portugal',        localFlag:'🇵🇹', visitante:'Croacia',     visitanteFlag:'🇭🇷', fecha:'02/07 19:00'},
-    {id:'R3213', local:'Suiza',           localFlag:'🇨🇭', visitante:'Argelia',     visitanteFlag:'🇩🇿', fecha:'02/07 23:00'},
-    {id:'R3214', local:'Australia',       localFlag:'🇦🇺', visitante:'Egipto',      visitanteFlag:'🇪🇬', fecha:'03/07 14:00'},
-    {id:'R3215', local:'Argentina',       localFlag:'🇦🇷', visitante:'Cabo verde',  visitanteFlag:'🇨🇻', fecha:'03/07 18:00'},
-    {id:'R3216', local:'Colombia',        localFlag:'🇨🇴', visitante:'Ghana',       visitanteFlag:'🇬🇭', fecha:'03/07 21:30'},
+    {id:'R321',  local:'Sud Africa',       localFlag:'🇿🇦', visitante:'Canadá',     visitanteFlag:'🇨🇦', fecha:'28/06 15:00'},
+    {id:'R322',  local:'Brasil',           localFlag:'🇧🇷', visitante:'Japón',      visitanteFlag:'🇯🇵', fecha:'29/06 13:00'},
+    {id:'R323',  local:'Países bajos',     localFlag:'🇳🇱', visitante:'Marruecos',  visitanteFlag:'🇲🇦', fecha:'29/06 21:00'},
+    {id:'R324',  local:'Alemania',         localFlag:'🇩🇪', visitante:'Paraguay',   visitanteFlag:'🇵🇾', fecha:'29/06 16:00'},
+    {id:'R325',  local:'Costa de Marfíl', localFlag:'🇨🇮', visitante:'Noruega',    visitanteFlag:'🇳🇴', fecha:'30/06 13:00'},
+    {id:'R326',  local:'Francia',          localFlag:'🇫🇷', visitante:'Suecia',     visitanteFlag:'🇸🇪', fecha:'30/06 17:00'},
+    {id:'R327',  local:'México',           localFlag:'🇲🇽', visitante:'Ecuador',    visitanteFlag:'🇪🇨', fecha:'30/06 21:00'},
+    {id:'R328',  local:'Inglaterra',       localFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', visitante:'Congo',      visitanteFlag:'🇨🇩', fecha:'01/07 12:00'},
+    {id:'R329',  local:'Bélgica',          localFlag:'🇧🇪', visitante:'Senegal',    visitanteFlag:'🇸🇳', fecha:'01/07 16:00'},
+    {id:'R3210', local:'Usa',             localFlag:'🇺🇸', visitante:'Bosnia',     visitanteFlag:'🇧🇦', fecha:'01/07 20:00'},
+    {id:'R3211', local:'España',           localFlag:'🇪🇸', visitante:'Austria',    visitanteFlag:'🇦🇹', fecha:'02/07 15:00'},
+    {id:'R3212', local:'Portugal',         localFlag:'🇵🇹', visitante:'Croacia',    visitanteFlag:'🇭🇷', fecha:'02/07 19:00'},
+    {id:'R3213', local:'Suiza',            localFlag:'🇨🇭', visitante:'Argelia',    visitanteFlag:'🇩🇿', fecha:'02/07 23:00'},
+    {id:'R3214', local:'Australia',        localFlag:'🇦🇺', visitante:'Egipto',     visitanteFlag:'🇪🇬', fecha:'03/07 14:00'},
+    {id:'R3215', local:'Argentina',        localFlag:'🇦🇷', visitante:'Cabo verde', visitanteFlag:'🇨🇻', fecha:'03/07 18:00'},
+    {id:'R3216', local:'Colombia',         localFlag:'🇨🇴', visitante:'Ghana',      visitanteFlag:'🇬🇭', fecha:'03/07 21:30'},
   ];
   cruces16.forEach(function(c) {
-    partidos.push({id:c.id, fase:'Dieciseisavos', grupo:'Dieciseisavos',
-      local:c.local, localFlag:c.localFlag, visitante:c.visitante, visitanteFlag:c.visitanteFlag,
-      fecha:c.fecha, resultado:null, clasificado:null, esEliminatoria:true});
+    partidos.push({
+      id: c.id, fase:'Dieciseisavos', grupo:'Dieciseisavos',
+      local: c.local, localFlag: c.localFlag,
+      visitante: c.visitante, visitanteFlag: c.visitanteFlag,
+      fecha: c.fecha, resultado: null, clasificado: null, esEliminatoria: true,
+    });
   });
-
   var crucesOct = [
     {id:'R161', local:'Canadá',    localFlag:'🇨🇦', visitante:'Marruecos',  visitanteFlag:'🇲🇦', fecha:'04/07 13:00'},
     {id:'R162', local:'Paraguay',  localFlag:'🇵🇾', visitante:'Francia',    visitanteFlag:'🇫🇷', fecha:'04/07 17:00'},
@@ -1710,7 +1713,6 @@ function generarPartidosElim() {
       local:c.local, localFlag:c.localFlag, visitante:c.visitante, visitanteFlag:c.visitanteFlag,
       fecha:c.fecha, resultado:null, clasificado:null, esEliminatoria:true});
   });
-
   var fases = [
     {fase:'Cuartos',       count:4, prefijo:'QF',  fechaBase:'09/07'},
     {fase:'Semifinal',     count:2, prefijo:'SF',  fechaBase:'14/07'},
@@ -1719,13 +1721,46 @@ function generarPartidosElim() {
   ];
   fases.forEach(function(f) {
     for (var i = 1; i <= f.count; i++) {
-      partidos.push({id:f.prefijo+i, fase:f.fase, grupo:f.fase,
-        local:'Por definir', localFlag:'🏳️', visitante:'Por definir', visitanteFlag:'🏳️',
-        fecha:f.fechaBase, resultado:null, clasificado:null, esEliminatoria:true});
+      partidos.push({
+        id: f.prefijo+i, fase: f.fase, grupo: f.fase,
+        local:'Por definir', localFlag:'🏳️',
+        visitante:'Por definir', visitanteFlag:'🏳️',
+        fecha: f.fechaBase, resultado: null, clasificado: null, esEliminatoria: true,
+      });
     }
   });
   return partidos;
 }
+
+// ══════════════════════════════════════════════════════════
+//  ESTADO GLOBAL
+// ══════════════════════════════════════════════════════════
+let estado = cargarEstado();
+
+// ── MIGRACIÓN: eliminar a Milo de la polla ──
+(function eliminarMilo() {
+  var idx = estado.jugadores.findIndex(function(j){ return j.nombre.toLowerCase() === 'milo'; });
+  if (idx !== -1) {
+    var id = estado.jugadores[idx].id;
+    estado.jugadores.splice(idx, 1);
+    delete estado.pronosticos[id];
+    delete estado.puntajes[id];
+    guardarEstado();
+    console.log('[Migración] Milo eliminado de la polla');
+  }
+})();
+// Si el usuario tenía una versión anterior donde R3210 decía 'EEUU', esto lo corrige.
+(function migrarNombresEquipos() {
+  var correcciones = { 'EEUU': 'Usa', 'Bosnia y Herz.': 'Bosnia', 'RD Congo': 'Congo',
+    'C. Verde': 'Cabo verde', 'C. de Marfil': 'Costa de Marfíl', 'Costa de Marfil': 'Costa de Marfíl',
+    'Países Bajos': 'Países bajos', 'Irak': 'Irák', 'EE.UU.': 'Usa', 'Uzbekistán': 'Uzbekistan' };
+  var cambios = 0;
+  (estado.partidos || []).forEach(function(p) {
+    if (correcciones[p.local])     { p.local     = correcciones[p.local];     cambios++; }
+    if (correcciones[p.visitante]) { p.visitante = correcciones[p.visitante]; cambios++; }
+  });
+  if (cambios > 0) { guardarEstado(); console.log('[Migración] Corregidos', cambios, 'nombres de equipos en partidos guardados'); }
+})();
 
 function estadoDefault() {
   return {
@@ -2869,40 +2904,30 @@ function compartirTablaWhatsApp() {
 
 // ── PRELOAD OCTAVOS — SAMPAYO ──
 (function(){
-  var pronOct_sampayo = {"R161": {"local": 0, "visitante": 2, "clasificado": "Marruecos"}, "R162": {"local": 0, "visitante": 3, "clasificado": "Francia"}, "R163": {"local": 2, "visitante": 1, "clasificado": "Brasil"}, "R164": {"local": 1, "visitante": 1, "clasificado": "México"}, "R165": {"local": 0, "visitante": 2, "clasificado": "España"}, "R166": {"local": 1, "visitante": 1, "clasificado": "Usa"}, "R167": {"local": 3, "visitante": 0, "clasificado": "Argentina"}, "R168": {"local": 1, "visitante": 1, "clasificado": "Colombia"}};
-  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'sampayo'; });
-  if (jugador) {
-    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
-    Object.assign(estado.pronosticos[jugador.id], pronOct_sampayo);
-  }
+  var p = {"R161":{"local":0,"visitante":2,"clasificado":"Marruecos"},"R162":{"local":0,"visitante":3,"clasificado":"Francia"},"R163":{"local":2,"visitante":1,"clasificado":"Brasil"},"R164":{"local":1,"visitante":1,"clasificado":"México"},"R165":{"local":0,"visitante":2,"clasificado":"España"},"R166":{"local":1,"visitante":1,"clasificado":"Usa"},"R167":{"local":3,"visitante":0,"clasificado":"Argentina"},"R168":{"local":1,"visitante":1,"clasificado":"Colombia"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='sampayo'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
 })();
 // ── PRELOAD OCTAVOS — CRISTIANO ──
 (function(){
-  var pronOct_cristiano = {"R161": {"local": 1, "visitante": 2, "clasificado": "Marruecos"}, "R162": {"local": 0, "visitante": 2, "clasificado": "Francia"}, "R163": {"local": 3, "visitante": 2, "clasificado": "Brasil"}, "R164": {"local": 2, "visitante": 2, "clasificado": "Inglaterra"}, "R165": {"local": 2, "visitante": 3, "clasificado": "España"}, "R166": {"local": 2, "visitante": 2, "clasificado": "Usa"}, "R167": {"local": 2, "visitante": 1, "clasificado": "Argentina"}, "R168": {"local": 1, "visitante": 2, "clasificado": "Colombia"}};
-  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'cristiano'; });
-  if (jugador) {
-    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
-    Object.assign(estado.pronosticos[jugador.id], pronOct_cristiano);
-  }
+  var p = {"R161":{"local":1,"visitante":2,"clasificado":"Marruecos"},"R162":{"local":0,"visitante":2,"clasificado":"Francia"},"R163":{"local":3,"visitante":2,"clasificado":"Brasil"},"R164":{"local":2,"visitante":2,"clasificado":"Inglaterra"},"R165":{"local":2,"visitante":3,"clasificado":"España"},"R166":{"local":2,"visitante":2,"clasificado":"Usa"},"R167":{"local":2,"visitante":1,"clasificado":"Argentina"},"R168":{"local":1,"visitante":2,"clasificado":"Colombia"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='cristiano'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
 })();
 // ── PRELOAD OCTAVOS — PAPAGAYO ──
 (function(){
-  var pronOct_papagayo = {"R161": {"local": 1, "visitante": 2, "clasificado": "Marruecos"}, "R162": {"local": 0, "visitante": 2, "clasificado": "Francia"}, "R163": {"local": 2, "visitante": 1, "clasificado": "Brasil"}, "R164": {"local": 1, "visitante": 2, "clasificado": "Inglaterra"}, "R165": {"local": 1, "visitante": 2, "clasificado": "España"}, "R166": {"local": 2, "visitante": 1, "clasificado": "Usa"}, "R167": {"local": 2, "visitante": 0, "clasificado": "Argentina"}, "R168": {"local": 0, "visitante": 1, "clasificado": "Colombia"}};
-  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'papagayo'; });
-  if (jugador) {
-    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
-    Object.assign(estado.pronosticos[jugador.id], pronOct_papagayo);
-  }
+  var p = {"R161":{"local":1,"visitante":2,"clasificado":"Marruecos"},"R162":{"local":0,"visitante":2,"clasificado":"Francia"},"R163":{"local":2,"visitante":1,"clasificado":"Brasil"},"R164":{"local":1,"visitante":2,"clasificado":"Inglaterra"},"R165":{"local":1,"visitante":2,"clasificado":"España"},"R166":{"local":2,"visitante":1,"clasificado":"Usa"},"R167":{"local":2,"visitante":0,"clasificado":"Argentina"},"R168":{"local":0,"visitante":1,"clasificado":"Colombia"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='papagayo'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
 })();
 // ── PRELOAD OCTAVOS — HERNO ──
 (function(){
-  var pronOct_herno = {"R161": {"local": 0, "visitante": 2, "clasificado": "Marruecos"}, "R162": {"local": 0, "visitante": 2, "clasificado": "Francia"}, "R163": {"local": 2, "visitante": 1, "clasificado": "Brasil"}, "R164": {"local": 1, "visitante": 0, "clasificado": "México"}, "R165": {"local": 1, "visitante": 3, "clasificado": "España"}, "R166": {"local": 2, "visitante": 1, "clasificado": "Usa"}, "R167": {"local": 3, "visitante": 1, "clasificado": "Argentina"}, "R168": {"local": 0, "visitante": 1, "clasificado": "Colombia"}};
-  var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'herno'; });
-  if (jugador) {
-    if (!estado.pronosticos[jugador.id]) estado.pronosticos[jugador.id] = {};
-    Object.assign(estado.pronosticos[jugador.id], pronOct_herno);
-  }
+  var p = {"R161":{"local":0,"visitante":2,"clasificado":"Marruecos"},"R162":{"local":0,"visitante":2,"clasificado":"Francia"},"R163":{"local":2,"visitante":1,"clasificado":"Brasil"},"R164":{"local":1,"visitante":0,"clasificado":"México"},"R165":{"local":1,"visitante":3,"clasificado":"España"},"R166":{"local":2,"visitante":1,"clasificado":"Usa"},"R167":{"local":3,"visitante":1,"clasificado":"Argentina"},"R168":{"local":0,"visitante":1,"clasificado":"Colombia"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='herno'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
 })();
+guardarEstado();
+
 recalcularPuntajes();
 renderInicio();
 iniciarAutoUpdate();
