@@ -2951,6 +2951,12 @@ function compartirTablaWhatsApp() {
   var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='herno'; });
   if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
 })();
+// ── PRELOAD OCTAVOS — PABLINHO ──
+(function(){
+  var p = {"R161":{"local":2,"visitante":2,"clasificado":"Marruecos"},"R162":{"local":0,"visitante":3,"clasificado":"Francia"},"R163":{"local":3,"visitante":1,"clasificado":"Brasil"},"R164":{"local":2,"visitante":2,"clasificado":"Inglaterra"},"R165":{"local":1,"visitante":3,"clasificado":"España"},"R166":{"local":2,"visitante":1,"clasificado":"Usa"},"R167":{"local":3,"visitante":2,"clasificado":"Argentina"},"R168":{"local":1,"visitante":2,"clasificado":"Colombia"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='pablinho'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
 guardarEstado();
 
 recalcularPuntajes();
