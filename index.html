@@ -1734,7 +1734,7 @@ function estadoDefault() {
     pronosticos: {},
     puntajes: {},
     especiales: {},
-    version: 10,
+    version: 9,
   };
 }
 
@@ -1743,7 +1743,7 @@ function cargarEstado() {
     const raw = localStorage.getItem('polla_mundial_2026');
     if (!raw) return estadoDefault();
     const parsed = JSON.parse(raw);
-    if (!parsed.partidos || parsed.version !== 10) {
+    if (!parsed.partidos || parsed.version !== 9) {
       const def = estadoDefault();
       def.jugadores = (parsed.jugadores || []).filter(j => j.nombre.toLowerCase() !== 'papagallo');
       def.pronosticos = parsed.pronosticos || {};
@@ -2868,7 +2868,7 @@ function compartirTablaWhatsApp() {
 // ───────────────────────────────────────────────────────────────────
 
 // ── PRELOAD OCTAVOS — SAMPAYO ──
-(function() {
+(function(){
   var pronOct_sampayo = {"R161": {"local": 0, "visitante": 2, "clasificado": "Marruecos"}, "R162": {"local": 0, "visitante": 3, "clasificado": "Francia"}, "R163": {"local": 2, "visitante": 1, "clasificado": "Brasil"}, "R164": {"local": 1, "visitante": 1, "clasificado": "México"}, "R165": {"local": 0, "visitante": 2, "clasificado": "España"}, "R166": {"local": 1, "visitante": 1, "clasificado": "Usa"}, "R167": {"local": 3, "visitante": 0, "clasificado": "Argentina"}, "R168": {"local": 1, "visitante": 1, "clasificado": "Colombia"}};
   var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'sampayo'; });
   if (jugador) {
@@ -2877,7 +2877,7 @@ function compartirTablaWhatsApp() {
   }
 })();
 // ── PRELOAD OCTAVOS — CRISTIANO ──
-(function() {
+(function(){
   var pronOct_cristiano = {"R161": {"local": 1, "visitante": 2, "clasificado": "Marruecos"}, "R162": {"local": 0, "visitante": 2, "clasificado": "Francia"}, "R163": {"local": 3, "visitante": 2, "clasificado": "Brasil"}, "R164": {"local": 2, "visitante": 2, "clasificado": "Inglaterra"}, "R165": {"local": 2, "visitante": 3, "clasificado": "España"}, "R166": {"local": 2, "visitante": 2, "clasificado": "Usa"}, "R167": {"local": 2, "visitante": 1, "clasificado": "Argentina"}, "R168": {"local": 1, "visitante": 2, "clasificado": "Colombia"}};
   var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'cristiano'; });
   if (jugador) {
@@ -2886,7 +2886,7 @@ function compartirTablaWhatsApp() {
   }
 })();
 // ── PRELOAD OCTAVOS — PAPAGAYO ──
-(function() {
+(function(){
   var pronOct_papagayo = {"R161": {"local": 1, "visitante": 2, "clasificado": "Marruecos"}, "R162": {"local": 0, "visitante": 2, "clasificado": "Francia"}, "R163": {"local": 2, "visitante": 1, "clasificado": "Brasil"}, "R164": {"local": 1, "visitante": 2, "clasificado": "Inglaterra"}, "R165": {"local": 1, "visitante": 2, "clasificado": "España"}, "R166": {"local": 2, "visitante": 1, "clasificado": "Usa"}, "R167": {"local": 2, "visitante": 0, "clasificado": "Argentina"}, "R168": {"local": 0, "visitante": 1, "clasificado": "Colombia"}};
   var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'papagayo'; });
   if (jugador) {
@@ -2895,7 +2895,7 @@ function compartirTablaWhatsApp() {
   }
 })();
 // ── PRELOAD OCTAVOS — HERNO ──
-(function() {
+(function(){
   var pronOct_herno = {"R161": {"local": 0, "visitante": 2, "clasificado": "Marruecos"}, "R162": {"local": 0, "visitante": 2, "clasificado": "Francia"}, "R163": {"local": 2, "visitante": 1, "clasificado": "Brasil"}, "R164": {"local": 1, "visitante": 0, "clasificado": "México"}, "R165": {"local": 1, "visitante": 3, "clasificado": "España"}, "R166": {"local": 2, "visitante": 1, "clasificado": "Usa"}, "R167": {"local": 3, "visitante": 1, "clasificado": "Argentina"}, "R168": {"local": 0, "visitante": 1, "clasificado": "Colombia"}};
   var jugador = estado.jugadores.find(function(j){ return j.nombre.toLowerCase() === 'herno'; });
   if (jugador) {
