@@ -1698,12 +1698,26 @@ function generarPartidosElim() {
       fecha: c.fecha, resultado: null, clasificado: null, esEliminatoria: true,
     });
   });
+  var crucesOct = [
+    {id:'R161', local:'Canadá',    localFlag:'🇨🇦', visitante:'Marruecos',  visitanteFlag:'🇲🇦', fecha:'04/07 13:00'},
+    {id:'R162', local:'Paraguay',  localFlag:'🇵🇾', visitante:'Francia',    visitanteFlag:'🇫🇷', fecha:'04/07 17:00'},
+    {id:'R163', local:'Brasil',    localFlag:'🇧🇷', visitante:'Noruega',    visitanteFlag:'🇳🇴', fecha:'05/07 16:00'},
+    {id:'R164', local:'México',    localFlag:'🇲🇽', visitante:'Inglaterra', visitanteFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', fecha:'05/07 20:00'},
+    {id:'R165', local:'Portugal',  localFlag:'🇵🇹', visitante:'España',     visitanteFlag:'🇪🇸', fecha:'06/07 15:00'},
+    {id:'R166', local:'Usa',       localFlag:'🇺🇸', visitante:'Bélgica',    visitanteFlag:'🇧🇪', fecha:'06/07 20:00'},
+    {id:'R167', local:'Argentina', localFlag:'🇦🇷', visitante:'Egipto',     visitanteFlag:'🇪🇬', fecha:'07/07 12:00'},
+    {id:'R168', local:'Suiza',     localFlag:'🇨🇭', visitante:'Colombia',   visitanteFlag:'🇨🇴', fecha:'07/07 16:00'},
+  ];
+  crucesOct.forEach(function(c) {
+    partidos.push({id:c.id, fase:'Octavos', grupo:'Octavos',
+      local:c.local, localFlag:c.localFlag, visitante:c.visitante, visitanteFlag:c.visitanteFlag,
+      fecha:c.fecha, resultado:null, clasificado:null, esEliminatoria:true});
+  });
   var fases = [
-    {fase:'Octavos',      count:8, prefijo:'R16',fechaBase:'04/07'},
-    {fase:'Cuartos',      count:4, prefijo:'QF', fechaBase:'09/07'},
-    {fase:'Semifinal',    count:2, prefijo:'SF', fechaBase:'14/07'},
-    {fase:'Tercer puesto',count:1, prefijo:'3P', fechaBase:'18/07'},
-    {fase:'Final',        count:1, prefijo:'FIN',fechaBase:'19/07'},
+    {fase:'Cuartos',       count:4, prefijo:'QF',  fechaBase:'09/07'},
+    {fase:'Semifinal',     count:2, prefijo:'SF',  fechaBase:'14/07'},
+    {fase:'Tercer puesto', count:1, prefijo:'3P',  fechaBase:'18/07'},
+    {fase:'Final',         count:1, prefijo:'FIN', fechaBase:'19/07'},
   ];
   fases.forEach(function(f) {
     for (var i = 1; i <= f.count; i++) {
@@ -1746,6 +1760,31 @@ let estado = cargarEstado();
     if (correcciones[p.visitante]) { p.visitante = correcciones[p.visitante]; cambios++; }
   });
   if (cambios > 0) { guardarEstado(); console.log('[Migración] Corregidos', cambios, 'nombres de equipos en partidos guardados'); }
+})();
+
+// ── MIGRACIÓN: actualizar partidos de Octavos con equipos y fechas reales ──
+(function migrarOctavos() {
+  var crucesOct = [
+    {id:'R161', local:'Canadá',    localFlag:'🇨🇦', visitante:'Marruecos',  visitanteFlag:'🇲🇦', fecha:'04/07 13:00'},
+    {id:'R162', local:'Paraguay',  localFlag:'🇵🇾', visitante:'Francia',    visitanteFlag:'🇫🇷', fecha:'04/07 17:00'},
+    {id:'R163', local:'Brasil',    localFlag:'🇧🇷', visitante:'Noruega',    visitanteFlag:'🇳🇴', fecha:'05/07 16:00'},
+    {id:'R164', local:'México',    localFlag:'🇲🇽', visitante:'Inglaterra', visitanteFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', fecha:'05/07 20:00'},
+    {id:'R165', local:'Portugal',  localFlag:'🇵🇹', visitante:'España',     visitanteFlag:'🇪🇸', fecha:'06/07 15:00'},
+    {id:'R166', local:'Usa',       localFlag:'🇺🇸', visitante:'Bélgica',    visitanteFlag:'🇧🇪', fecha:'06/07 20:00'},
+    {id:'R167', local:'Argentina', localFlag:'🇦🇷', visitante:'Egipto',     visitanteFlag:'🇪🇬', fecha:'07/07 12:00'},
+    {id:'R168', local:'Suiza',     localFlag:'🇨🇭', visitante:'Colombia',   visitanteFlag:'🇨🇴', fecha:'07/07 16:00'},
+  ];
+  var cambios = 0;
+  crucesOct.forEach(function(cruce) {
+    var p = (estado.partidos || []).find(function(x){ return x.id === cruce.id; });
+    if (p && (p.local === 'Por definir' || p.local !== cruce.local)) {
+      p.local = cruce.local; p.localFlag = cruce.localFlag;
+      p.visitante = cruce.visitante; p.visitanteFlag = cruce.visitanteFlag;
+      p.fecha = cruce.fecha; p.fase = 'Octavos'; p.grupo = 'Octavos';
+      cambios++;
+    }
+  });
+  if (cambios > 0) { guardarEstado(); console.log('[Migración] Octavos actualizados:', cambios, 'partidos'); }
 })();
 
 function estadoDefault() {
@@ -2888,24 +2927,55 @@ function compartirTablaWhatsApp() {
 })();
 // ───────────────────────────────────────────────────────────────────
 
-// ── MIGRACIÓN: actualizar partidos de Cuartos con equipos y fechas reales ──
-(function migrarCuartos() {
+// ── PRELOAD OCTAVOS — SAMPAYO ──
+(function(){
+  var p = {"R161":{"local":0,"visitante":2,"clasificado":"Marruecos"},"R162":{"local":0,"visitante":3,"clasificado":"Francia"},"R163":{"local":2,"visitante":1,"clasificado":"Brasil"},"R164":{"local":1,"visitante":1,"clasificado":"México"},"R165":{"local":0,"visitante":2,"clasificado":"España"},"R166":{"local":1,"visitante":1,"clasificado":"Usa"},"R167":{"local":3,"visitante":0,"clasificado":"Argentina"},"R168":{"local":1,"visitante":1,"clasificado":"Colombia"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='sampayo'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD OCTAVOS — CRISTIANO ──
+(function(){
+  var p = {"R161":{"local":1,"visitante":2,"clasificado":"Marruecos"},"R162":{"local":0,"visitante":2,"clasificado":"Francia"},"R163":{"local":3,"visitante":2,"clasificado":"Brasil"},"R164":{"local":2,"visitante":2,"clasificado":"Inglaterra"},"R165":{"local":2,"visitante":3,"clasificado":"España"},"R166":{"local":2,"visitante":2,"clasificado":"Usa"},"R167":{"local":2,"visitante":1,"clasificado":"Argentina"},"R168":{"local":1,"visitante":2,"clasificado":"Colombia"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='cristiano'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD OCTAVOS — PAPAGAYO ──
+(function(){
+  var p = {"R161":{"local":1,"visitante":2,"clasificado":"Marruecos"},"R162":{"local":0,"visitante":2,"clasificado":"Francia"},"R163":{"local":2,"visitante":1,"clasificado":"Brasil"},"R164":{"local":1,"visitante":2,"clasificado":"Inglaterra"},"R165":{"local":1,"visitante":2,"clasificado":"España"},"R166":{"local":2,"visitante":1,"clasificado":"Usa"},"R167":{"local":2,"visitante":0,"clasificado":"Argentina"},"R168":{"local":0,"visitante":1,"clasificado":"Colombia"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='papagayo'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD OCTAVOS — HERNO ──
+(function(){
+  var p = {"R161":{"local":0,"visitante":2,"clasificado":"Marruecos"},"R162":{"local":0,"visitante":2,"clasificado":"Francia"},"R163":{"local":2,"visitante":1,"clasificado":"Brasil"},"R164":{"local":1,"visitante":0,"clasificado":"México"},"R165":{"local":1,"visitante":3,"clasificado":"España"},"R166":{"local":2,"visitante":1,"clasificado":"Usa"},"R167":{"local":3,"visitante":1,"clasificado":"Argentina"},"R168":{"local":0,"visitante":1,"clasificado":"Colombia"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='herno'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD OCTAVOS — PABLINHO ──
+(function(){
+  var p = {"R161":{"local":2,"visitante":2,"clasificado":"Marruecos"},"R162":{"local":0,"visitante":3,"clasificado":"Francia"},"R163":{"local":3,"visitante":1,"clasificado":"Brasil"},"R164":{"local":2,"visitante":2,"clasificado":"Inglaterra"},"R165":{"local":1,"visitante":3,"clasificado":"España"},"R166":{"local":2,"visitante":1,"clasificado":"Usa"},"R167":{"local":3,"visitante":2,"clasificado":"Argentina"},"R168":{"local":1,"visitante":2,"clasificado":"Colombia"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='pablinho'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+
+// ── MIGRACIÓN: Cuartos de final con equipos y fechas reales ──
+(function(){
   var cruces = [
-    {id:'QF1', local:'Francia',   localFlag:'🇫🇷', visitante:'Marruecos', visitanteFlag:'🇲🇦', fecha:'09/07 16:00'},
-    {id:'QF2', local:'España',    localFlag:'🇪🇸', visitante:'Bélgica',   visitanteFlag:'🇧🇪', fecha:'10/07 15:00'},
-    {id:'QF3', local:'Noruega',   localFlag:'🇳🇴', visitante:'Inglaterra',visitanteFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', fecha:'11/07 17:00'},
-    {id:'QF4', local:'Argentina', localFlag:'🇦🇷', visitante:'Suiza',     visitanteFlag:'🇨🇭', fecha:'11/07 21:00'},
+    {id:'QF1', local:'Francia',   localFlag:'🇫🇷', visitante:'Marruecos',  visitanteFlag:'🇲🇦', fecha:'09/07 16:00'},
+    {id:'QF2', local:'España',    localFlag:'🇪🇸', visitante:'Bélgica',    visitanteFlag:'🇧🇪', fecha:'10/07 15:00'},
+    {id:'QF3', local:'Noruega',   localFlag:'🇳🇴', visitante:'Inglaterra', visitanteFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', fecha:'11/07 17:00'},
+    {id:'QF4', local:'Argentina', localFlag:'🇦🇷', visitante:'Suiza',      visitanteFlag:'🇨🇭', fecha:'11/07 21:00'},
   ];
   var cambios = 0;
   cruces.forEach(function(c) {
-    var p = (estado.partidos || []).find(function(x){ return x.id === c.id; });
-    if (p && (p.local === 'Por definir' || p.local !== c.local)) {
-      p.local = c.local; p.localFlag = c.localFlag;
-      p.visitante = c.visitante; p.visitanteFlag = c.visitanteFlag;
-      p.fecha = c.fecha; cambios++;
+    var p = (estado.partidos||[]).find(function(x){ return x.id===c.id; });
+    if(p && (p.local==='Por definir' || p.local!==c.local)){
+      p.local=c.local; p.localFlag=c.localFlag;
+      p.visitante=c.visitante; p.visitanteFlag=c.visitanteFlag;
+      p.fecha=c.fecha; cambios++;
     }
   });
-  if (cambios > 0) { guardarEstado(); console.log('[Migración] Cuartos actualizados:', cambios); }
+  if(cambios>0){ guardarEstado(); console.log('[Migración] Cuartos actualizados:',cambios); }
 })();
 
 // ── PRELOAD CUARTOS — SAMPAYO ──
