@@ -2888,6 +2888,58 @@ function compartirTablaWhatsApp() {
 })();
 // ───────────────────────────────────────────────────────────────────
 
+// ── MIGRACIÓN: actualizar partidos de Cuartos con equipos y fechas reales ──
+(function migrarCuartos() {
+  var cruces = [
+    {id:'QF1', local:'Francia',   localFlag:'🇫🇷', visitante:'Marruecos', visitanteFlag:'🇲🇦', fecha:'09/07 16:00'},
+    {id:'QF2', local:'España',    localFlag:'🇪🇸', visitante:'Bélgica',   visitanteFlag:'🇧🇪', fecha:'10/07 15:00'},
+    {id:'QF3', local:'Noruega',   localFlag:'🇳🇴', visitante:'Inglaterra',visitanteFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', fecha:'11/07 17:00'},
+    {id:'QF4', local:'Argentina', localFlag:'🇦🇷', visitante:'Suiza',     visitanteFlag:'🇨🇭', fecha:'11/07 21:00'},
+  ];
+  var cambios = 0;
+  cruces.forEach(function(c) {
+    var p = (estado.partidos || []).find(function(x){ return x.id === c.id; });
+    if (p && (p.local === 'Por definir' || p.local !== c.local)) {
+      p.local = c.local; p.localFlag = c.localFlag;
+      p.visitante = c.visitante; p.visitanteFlag = c.visitanteFlag;
+      p.fecha = c.fecha; cambios++;
+    }
+  });
+  if (cambios > 0) { guardarEstado(); console.log('[Migración] Cuartos actualizados:', cambios); }
+})();
+
+// ── PRELOAD CUARTOS — SAMPAYO ──
+(function(){
+  var p = {"QF1":{"local":2,"visitante":1,"clasificado":"Francia"},"QF2":{"local":2,"visitante":0,"clasificado":"España"},"QF3":{"local":2,"visitante":2,"clasificado":"Inglaterra"},"QF4":{"local":2,"visitante":1,"clasificado":"Argentina"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='sampayo'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD CUARTOS — PAPAGAYO ──
+(function(){
+  var p = {"QF1":{"local":2,"visitante":2,"clasificado":"Marruecos"},"QF2":{"local":2,"visitante":0,"clasificado":"España"},"QF3":{"local":2,"visitante":2,"clasificado":"Inglaterra"},"QF4":{"local":3,"visitante":1,"clasificado":"Argentina"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='papagayo'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD CUARTOS — HERNO ──
+(function(){
+  var p = {"QF1":{"local":2,"visitante":0,"clasificado":"Francia"},"QF2":{"local":2,"visitante":1,"clasificado":"España"},"QF3":{"local":1,"visitante":0,"clasificado":"Inglaterra"},"QF4":{"local":2,"visitante":1,"clasificado":"Argentina"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='herno'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD CUARTOS — CRISTIANO ──
+(function(){
+  var p = {"QF1":{"local":2,"visitante":1,"clasificado":"Francia"},"QF2":{"local":2,"visitante":0,"clasificado":"España"},"QF3":{"local":1,"visitante":2,"clasificado":"Inglaterra"},"QF4":{"local":2,"visitante":1,"clasificado":"Argentina"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='cristiano'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD CUARTOS — PABLINHO ──
+(function(){
+  var p = {"QF1":{"local":1,"visitante":1,"clasificado":"Francia"},"QF2":{"local":3,"visitante":0,"clasificado":"España"},"QF3":{"local":1,"visitante":2,"clasificado":"Inglaterra"},"QF4":{"local":3,"visitante":1,"clasificado":"Argentina"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='pablinho'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+guardarEstado();
+
 recalcularPuntajes();
 renderInicio();
 iniciarAutoUpdate();
