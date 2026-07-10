@@ -301,13 +301,44 @@ main {
 .hero {
   background: var(--bg-card);
   border-radius: 16px;
-  padding: 0;
   margin-bottom: 24px;
   position: relative;
   overflow: hidden;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-card), var(--shadow-glow);
+  padding: 0;
 }
+
+.hero-img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  position: relative;
+}
+
+.hero-title-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 60px 32px 20px;
+  background: linear-gradient(to top, rgba(8,12,18,0.95) 0%, rgba(8,12,18,0.6) 60%, transparent 100%);
+  display: flex;
+  align-items: flex-end;
+}
+
+.hero-stats-bar {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
 
 .hero-bg {
   position: absolute;
@@ -329,94 +360,45 @@ main {
   );
 }
 
-.hero-pattern {
-  position: absolute;
-  inset: 0;
-  background-image:
-    repeating-linear-gradient(
-      45deg,
-      rgba(255,255,255,0.01) 0px,
-      rgba(255,255,255,0.01) 1px,
-      transparent 1px,
-      transparent 20px
-    );
-}
+.hero-pattern { display: none; }
 
-.hero-content {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  padding: 36px 40px;
-}
+.hero-content { display: none; }
 
-.hero-trophy-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.hero-trophy-svg {
-  width: 90px;
-  height: 90px;
-  filter: drop-shadow(0 0 20px rgba(201,166,58,0.5));
-  animation: trophyFloat 4s ease-in-out infinite;
-}
-
-@keyframes trophyFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
-}
-
-.hero-trophy-label {
-  font-size: 11px;
-  letter-spacing: 2px;
-  color: var(--gold);
-  text-transform: uppercase;
-  font-weight: 600;
-}
-
-.hero-info { flex: 1; }
+.hero-trophy-section { display: none; }
+.hero-trophy-svg { display: none; }
+.hero-trophy-label { display: none; }
+.hero-info { display: none; }
+.hero-hosts { display: none; }
+.host-flag-big { display: none; }
 
 .hero-title {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 52px;
+  font-size: 48px;
   letter-spacing: 4px;
   line-height: 1;
   color: white;
-  margin-bottom: 4px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.8);
 }
 
 .hero-title span {
   color: var(--gold-light);
 }
 
-.hero-subtitle {
-  font-size: 14px;
-  color: var(--text-muted);
-  letter-spacing: 1px;
-  margin-bottom: 24px;
-  font-weight: 400;
-  font-family: 'Inter', sans-serif;
-}
+.hero-subtitle { display: none; }
 
-.hero-stats {
-  display: flex;
-  gap: 28px;
-  flex-wrap: wrap;
-}
+.hero-stats { display: none; }
 
 .hero-stat {
   text-align: center;
   position: relative;
+  flex: 1;
+  min-width: 80px;
 }
 
 .hero-stat::after {
   content: '';
   position: absolute;
-  right: -14px;
+  right: 0;
   top: 10%;
   height: 80%;
   width: 1px;
@@ -427,7 +409,7 @@ main {
 
 .hero-stat .num {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 30px;
+  font-size: 28px;
   color: var(--gold-light);
   display: block;
   line-height: 1;
@@ -435,25 +417,15 @@ main {
 }
 
 .hero-stat .lab {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
   letter-spacing: 1px;
   text-transform: uppercase;
   display: block;
   margin-top: 3px;
+  font-family: 'Inter', sans-serif;
 }
 
-.hero-hosts {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.host-flag-big {
-  font-size: 38px;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
-}
 
 /* ─── LIVE TICKER ─── */
 .live-ticker {
@@ -1183,7 +1155,9 @@ main {
   main { padding: 14px 10px 80px; }
 
   /* Hero */
-  .hero-content {
+  .hero-title { font-size: 36px; }
+  .hero-stat .num { font-size: 22px; }
+  .hero-stat .lab { font-size: 10px; }
     flex-direction: column;
     gap: 16px;
     padding: 20px 16px;
@@ -1362,76 +1336,29 @@ main {
 
   <div class="hero">
     <div class="hero-bg"></div>
-    <div class="hero-pattern"></div>
-    <div class="hero-content">
-      <!-- Copa SVG grande -->
-      <div class="hero-trophy-section">
-        <svg class="hero-trophy-svg" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="htg" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#f5d76e"/>
-              <stop offset="40%" stop-color="#c9a63a"/>
-              <stop offset="100%" stop-color="#8a6010"/>
-            </linearGradient>
-            <linearGradient id="htg2" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#f0c84a"/>
-              <stop offset="100%" stop-color="#c9a63a"/>
-            </linearGradient>
-            <filter id="heroGlow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            <filter id="softGlow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          </defs>
-          <!-- Copa cuerpo -->
-          <path d="M38 12h44v8h10v16c0 12-8 22-19 26L60 100 47 62C36 58 28 48 28 36V20h10V12z" fill="url(#htg)" filter="url(#heroGlow)"/>
-          <!-- Brillos -->
-          <path d="M48 18h10v18c-4-1-8-4-10-8V18z" fill="rgba(255,255,255,0.2)"/>
-          <ellipse cx="62" cy="30" rx="5" ry="8" fill="rgba(255,255,255,0.12)"/>
-          <!-- Base -->
-          <rect x="48" y="98" width="24" height="10" rx="3" fill="url(#htg2)"/>
-          <rect x="38" y="108" width="44" height="10" rx="5" fill="url(#htg2)"/>
-          <!-- Asas -->
-          <path d="M28 36c-8 2-14-4-14-12V14h14" fill="none" stroke="url(#htg)" stroke-width="3.5" stroke-linecap="round"/>
-          <path d="M92 36c8 2 14-4 14-12V14h-14" fill="none" stroke="url(#htg)" stroke-width="3.5" stroke-linecap="round"/>
-          <!-- Estrellas del mundial -->
-          <text x="60" y="72" text-anchor="middle" font-size="14" fill="rgba(255,255,255,0.3)">★★★</text>
-          <!-- Highlight superior -->
-          <path d="M44 16h32c-2 8-8 16-16 20C52 32 46 24 44 16z" fill="rgba(255,255,255,0.08)"/>
-        </svg>
-        <div class="hero-trophy-label">FIFA World Cup™</div>
+    <div class="hero-title-overlay">
+      <div class="hero-title">POLLA <span>MUNDIALERA</span></div>
+    </div>
+    <div class="hero-stats-bar">
+      <div class="hero-stat">
+        <span class="num" id="stat-jugadores">0</span>
+        <span class="lab">Participantes</span>
       </div>
-
-      <div class="hero-info">
-        <div class="hero-title">POLLA <span>MUNDIALERA</span></div>
-        <div class="hero-stats">
-          <div class="hero-stat">
-            <span class="num" id="stat-jugadores">0</span>
-            <span class="lab">Participantes</span>
-          </div>
-          <div class="hero-stat">
-            <span class="num" id="stat-partidos">0</span>
-            <span class="lab">Partidos jugados</span>
-          </div>
-          <div class="hero-stat">
-            <span class="num" id="stat-lider">—</span>
-            <span class="lab">Líder actual</span>
-          </div>
-          <div class="hero-stat">
-            <span class="num">$40k</span>
-            <span class="lab">Premio 1°</span>
-          </div>
-          <div class="hero-stat">
-            <span class="num">$10k</span>
-            <span class="lab">Premio 2°</span>
-          </div>
-        </div>
+      <div class="hero-stat">
+        <span class="num" id="stat-partidos">0</span>
+        <span class="lab">Partidos jugados</span>
       </div>
-
-      <div class="hero-hosts">
-        <div style="text-align:center;opacity:0.7">
-          <div style="font-size:11px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;font-family:Inter,sans-serif">Sedes</div>
-          <div class="host-flag-big">🇺🇸</div>
-          <div class="host-flag-big">🇨🇦</div>
-          <div class="host-flag-big">🇲🇽</div>
-        </div>
+      <div class="hero-stat">
+        <span class="num" id="stat-lider">—</span>
+        <span class="lab">Líder actual</span>
+      </div>
+      <div class="hero-stat">
+        <span class="num">$40k</span>
+        <span class="lab">Premio 1°</span>
+      </div>
+      <div class="hero-stat">
+        <span class="num">$10k</span>
+        <span class="lab">Premio 2°</span>
       </div>
     </div>
 
