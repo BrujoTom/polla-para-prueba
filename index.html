@@ -3038,13 +3038,13 @@ function compartirTablaWhatsApp() {
 // ── MIGRACIÓN: Semifinales con equipos reales ──
 (function(){
   var cruces = [
-    {id:'SF1', local:'Francia',    localFlag:'🇫🇷', visitante:'España',     visitanteFlag:'🇪🇸', fecha:'14/07'},
-    {id:'SF2', local:'Inglaterra', localFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', visitante:'Argentina',  visitanteFlag:'🇦🇷', fecha:'14/07'},
+    {id:'SF1', local:'Francia',    localFlag:'🇫🇷', visitante:'España',     visitanteFlag:'🇪🇸', fecha:'14/07 15:00'},
+    {id:'SF2', local:'Inglaterra', localFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', visitante:'Argentina',  visitanteFlag:'🇦🇷', fecha:'15/07 15:00'},
   ];
   var cambios = 0;
   cruces.forEach(function(c) {
     var p = (estado.partidos||[]).find(function(x){ return x.id===c.id; });
-    if(p && (p.local==='Por definir' || p.local!==c.local)){
+    if(p && (p.local==='Por definir' || p.local!==c.local || p.fecha!==c.fecha)){
       p.local=c.local; p.localFlag=c.localFlag;
       p.visitante=c.visitante; p.visitanteFlag=c.visitanteFlag;
       p.fecha=c.fecha; cambios++;
