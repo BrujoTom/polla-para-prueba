@@ -3034,6 +3034,43 @@ function compartirTablaWhatsApp() {
   var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='pablinho'; });
   if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
 })();
+
+// ── MIGRACIÓN: Semifinales con equipos reales ──
+(function(){
+  var cruces = [
+    {id:'SF1', local:'Francia',    localFlag:'🇫🇷', visitante:'España',     visitanteFlag:'🇪🇸', fecha:'14/07'},
+    {id:'SF2', local:'Inglaterra', localFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', visitante:'Argentina',  visitanteFlag:'🇦🇷', fecha:'14/07'},
+  ];
+  var cambios = 0;
+  cruces.forEach(function(c) {
+    var p = (estado.partidos||[]).find(function(x){ return x.id===c.id; });
+    if(p && (p.local==='Por definir' || p.local!==c.local)){
+      p.local=c.local; p.localFlag=c.localFlag;
+      p.visitante=c.visitante; p.visitanteFlag=c.visitanteFlag;
+      p.fecha=c.fecha; cambios++;
+    }
+  });
+  if(cambios>0){ guardarEstado(); console.log('[Migración] Semifinales actualizadas:',cambios); }
+})();
+
+// ── PRELOAD SEMIFINALES — PABLINHO ──
+(function(){
+  var p = {"SF1":{"local":1,"visitante":2,"clasificado":"España"},"SF2":{"local":1,"visitante":1,"clasificado":"Argentina"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='pablinho'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD SEMIFINALES — CRISTIANO ──
+(function(){
+  var p = {"SF1":{"local":2,"visitante":2,"clasificado":"España"},"SF2":{"local":2,"visitante":2,"clasificado":"Inglaterra"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='cristiano'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD SEMIFINALES — SAMPAYO ──
+(function(){
+  var p = {"SF1":{"local":2,"visitante":1,"clasificado":"Francia"},"SF2":{"local":1,"visitante":1,"clasificado":"Argentina"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='sampayo'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
 guardarEstado();
 
 recalcularPuntajes();
