@@ -3083,6 +3083,50 @@ function compartirTablaWhatsApp() {
   var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='herno'; });
   if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
 })();
+
+// ── MIGRACIÓN: Final y Tercer Puesto con equipos reales ──
+(function(){
+  var cruces = [
+    {id:'3P1',  local:'Francia', localFlag:'🇫🇷', visitante:'Inglaterra', visitanteFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', fecha:'18/07 17:00'},
+    {id:'FIN1', local:'España',  localFlag:'🇪🇸', visitante:'Argentina', visitanteFlag:'🇦🇷', fecha:'19/07 15:00'},
+  ];
+  var cambios = 0;
+  cruces.forEach(function(c) {
+    var p = (estado.partidos||[]).find(function(x){ return x.id===c.id; });
+    if(p && (p.local==='Por definir' || p.local!==c.local || p.fecha!==c.fecha)){
+      p.local=c.local; p.localFlag=c.localFlag;
+      p.visitante=c.visitante; p.visitanteFlag=c.visitanteFlag;
+      p.fecha=c.fecha; cambios++;
+    }
+  });
+  if(cambios>0){ guardarEstado(); console.log('[Migración] Final/Tercer puesto actualizados:',cambios); }
+})();
+
+// ── PRELOAD FINAL/TERCER PUESTO — SAMPAYO ──
+(function(){
+  var p = {"3P1":{"local":2,"visitante":1,"clasificado":"Francia"},"FIN1":{"local":1,"visitante":1,"clasificado":"Argentina"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='sampayo'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD FINAL/TERCER PUESTO — CRISTIANO ──
+(function(){
+  var p = {"3P1":{"local":2,"visitante":2,"clasificado":"Inglaterra"},"FIN1":{"local":2,"visitante":1,"clasificado":"España"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='cristiano'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD FINAL/TERCER PUESTO — PABLINHO ──
+(function(){
+  var p = {"3P1":{"local":3,"visitante":1,"clasificado":"Francia"},"FIN1":{"local":2,"visitante":2,"clasificado":"España"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='pablinho'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// ── PRELOAD FINAL/TERCER PUESTO — HERNO ──
+(function(){
+  var p = {"3P1":{"local":3,"visitante":1,"clasificado":"Francia"},"FIN1":{"local":2,"visitante":1,"clasificado":"España"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='herno'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+// Papagayo aún no envía pronóstico de Final/Tercer puesto.
 guardarEstado();
 
 recalcularPuntajes();
