@@ -3126,7 +3126,21 @@ function compartirTablaWhatsApp() {
   var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='herno'; });
   if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
 })();
-// Papagayo aún no envía pronóstico de Final/Tercer puesto.
+// ── PRELOAD FINAL/TERCER PUESTO — PAPAGAYO ──
+(function(){
+  var p = {"3P1":{"local":2,"visitante":2,"clasificado":"Inglaterra"},"FIN1":{"local":1,"visitante":2,"clasificado":"Argentina"}};
+  var j = estado.jugadores.find(function(x){ return x.nombre.toLowerCase()==='papagayo'; });
+  if(j){ if(!estado.pronosticos[j.id]) estado.pronosticos[j.id]={}; Object.assign(estado.pronosticos[j.id],p); }
+})();
+
+// ── RESULTADOS OFICIALES: Campeón y Goleador ──
+(function(){
+  if(!estado.especiales) estado.especiales = {};
+  estado.especiales.campeon = 'España';
+  estado.especiales.goleador = 'Mbappe';
+})();
+
+recalcularPuntajes();
 guardarEstado();
 
 recalcularPuntajes();
